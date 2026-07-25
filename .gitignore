@@ -1,0 +1,49 @@
+# ─── Dependencies ────────────────────────────────────────────────────────
+node_modules/
+
+# ─── Build output ────────────────────────────────────────────────────────
+dist/
+dist-ssr/
+src-tauri/target/
+# Regenerated from tauri.conf.json on every build.
+src-tauri/gen/schemas/
+
+# ─── Logs ────────────────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ─── Secrets ─────────────────────────────────────────────────────────────
+# The Twitch Client ID and token live in the app's own sqlite, never in the
+# tree — but keep the usual suspects out by construction anyway.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+# Tauri updater signing keys, if the updater is ever switched on.
+*.tauri-key
+tauri-private.key*
+
+# ─── Editors ─────────────────────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.local
+
+# ─── Local tooling ───────────────────────────────────────────────────────
+.claude/settings.local.json
+
+# ─── OS ──────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini

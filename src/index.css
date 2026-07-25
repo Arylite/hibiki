@@ -1,0 +1,252 @@
+@import "tailwindcss";
+
+/* Two faces, latin only. Declared by hand against the single variable file we
+   want, because the package entry points pull every subset and Vite copies all
+   of them into dist even though a browser downloads one. */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 900;
+    src: url("@fontsource-variable/inter/files/inter-latin-wght-normal.woff2") format('woff2-variations');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Geist Mono';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 900;
+    src: url("@fontsource-variable/geist-mono/files/geist-mono-latin-wght-normal.woff2") format('woff2-variations');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Palette
+
+   Deep indigo, hot pink, white. The indigo is the field and does almost all
+   of the work; the pink is spent only on what is live, selected or primary.
+   Amber and coral carry the two states pink cannot say — needs attention,
+   and broken.
+
+   Dark is the default set. Values live here as raw variables and are
+   referenced from @theme, which is what lets the whole app follow the system
+   appearance without a single `dark:` prefix in a component.
+   ───────────────────────────────────────────────────────────────────────── */
+:root {
+    /* Stated as a single value in each branch: a `dark light` pair gets
+       normalised to `light dark` by the minifier, which flips what the UA
+       renders for anyone whose system expresses no preference at all. */
+    color-scheme: dark;
+
+    --c-canvas: #0A0836;
+    --c-surface: #12104A;
+    --c-fill: #1A1758;
+    --c-fill-strong: #252169;
+    --c-line: #221F5F;
+    --c-line-strong: #332E7D;
+
+    --c-ink: #F5F3FF;
+    --c-ink-2: #B3AEE0;
+    --c-ink-3: #918BC7;
+
+    --c-accent: #FF3D8B;
+    --c-accent-hover: #FF63A4;
+    --c-accent-ink: #14082C;
+    --c-accent-soft: #33124F;
+
+    --c-warn: #F5B93B;
+    --c-warn-soft: #3A2A16;
+    --c-danger: #FF6A4D;
+    --c-danger-hover: #FF8168;
+    --c-danger-soft: #3B1A18;
+
+    --e-pop: 0 16px 40px -12px rgb(2 1 20 / 0.7), 0 4px 12px -4px rgb(2 1 20 / 0.5);
+    --e-raise: 0 1px 2px rgb(2 1 20 / 0.3);
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        color-scheme: light;
+
+        --c-canvas: #F6F5FC;
+        --c-surface: #FFFFFF;
+        --c-fill: #F0EEFA;
+        --c-fill-strong: #E3E0F4;
+        --c-line: #E7E4F5;
+        --c-line-strong: #D3CFEB;
+
+        --c-ink: #120E4E;
+        --c-ink-2: #4C4790;
+        --c-ink-3: #7B76AE;
+
+        --c-accent: #D0146F;
+        --c-accent-hover: #B30E5E;
+        --c-accent-ink: #FFFFFF;
+        --c-accent-soft: #FCE7F2;
+
+        --c-warn: #8A5B0F;
+        --c-warn-soft: #FAF0DB;
+        --c-danger: #C0392B;
+        --c-danger-hover: #A32E22;
+        --c-danger-soft: #FBEAE7;
+
+        --e-pop: 0 12px 32px -12px rgb(18 14 78 / 0.22), 0 4px 10px -4px rgb(18 14 78 / 0.12);
+        --e-raise: 0 1px 2px rgb(18 14 78 / 0.06);
+    }
+}
+
+@theme inline {
+    --color-canvas: var(--c-canvas);
+    --color-surface: var(--c-surface);
+    --color-fill: var(--c-fill);
+    --color-fill-strong: var(--c-fill-strong);
+    --color-line: var(--c-line);
+    --color-line-strong: var(--c-line-strong);
+
+    --color-ink: var(--c-ink);
+    --color-ink-2: var(--c-ink-2);
+    --color-ink-3: var(--c-ink-3);
+
+    --color-accent: var(--c-accent);
+    --color-accent-hover: var(--c-accent-hover);
+    --color-accent-ink: var(--c-accent-ink);
+    --color-accent-soft: var(--c-accent-soft);
+
+    --color-warn: var(--c-warn);
+    --color-warn-soft: var(--c-warn-soft);
+    --color-danger: var(--c-danger);
+    --color-danger-hover: var(--c-danger-hover);
+    --color-danger-soft: var(--c-danger-soft);
+
+    --shadow-pop: var(--e-pop);
+    --shadow-raise: var(--e-raise);
+
+    --font-sans: 'Inter', system-ui, sans-serif;
+    --font-mono: 'Geist Mono', ui-monospace, monospace;
+
+    /* Six steps. Tracking tightens as size grows, which is the whole trick to
+       making one family carry a hierarchy. */
+    --text-display: 26px;
+    --text-display--line-height: 1.2;
+    --text-display--letter-spacing: -0.021em;
+    --text-title: 17px;
+    --text-title--line-height: 1.35;
+    --text-title--letter-spacing: -0.014em;
+    --text-lead: 14px;
+    --text-lead--line-height: 1.55;
+    --text-lead--letter-spacing: -0.006em;
+    --text-body: 13px;
+    --text-body--line-height: 1.5;
+    --text-body--letter-spacing: -0.003em;
+    --text-sm: 12px;
+    --text-sm--line-height: 1.45;
+    --text-xs: 11px;
+    --text-xs--line-height: 1.4;
+
+    --radius-xs: 4px;
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+
+    /* One curve, two durations. Anything longer is the interface asking to be
+       watched instead of used. */
+    --ease-out-quiet: cubic-bezier(0.22, 0.61, 0.36, 1);
+    --animate-rise: rise 160ms var(--ease-out-quiet) both;
+    --animate-fade: fade 120ms var(--ease-out-quiet) both;
+}
+
+@keyframes rise {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+}
+
+@keyframes fade {
+    from {
+        opacity: 0;
+    }
+}
+
+@layer base {
+    * {
+        border-color: var(--color-line);
+    }
+
+    /* Left transparent so the OBS overlay route composites over the stream;
+       the app shell paints its own canvas. */
+    body {
+        color: var(--color-ink);
+        font-family: var(--font-sans);
+        font-size: var(--text-body);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+    }
+
+    /* A single focus treatment everywhere: a ring at a distance, never a glow,
+       never a shifted border that moves the thing you are looking at. */
+    :focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 2px;
+        border-radius: var(--radius-xs);
+    }
+
+    ::selection {
+        background: var(--color-accent-soft);
+        color: var(--color-ink);
+    }
+
+    /* Desktop app: the scrollbar is part of the design, not the OS's opinion. */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-line-strong) transparent;
+    }
+
+    /* Lucide draws at 2px, which reads as a heavier weight than 13px Inter
+       next to it. One rule keeps the whole icon set on the same weight as the
+       text it labels. */
+    .lucide {
+        stroke-width: 1.6px;
+    }
+
+    /* Numeric input spinners are noise next to a value you set with a slider
+       or type once. */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        appearance: none;
+        margin: 0;
+    }
+}
+
+@utility label {
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    font-weight: 560;
+    letter-spacing: 0.045em;
+    text-transform: uppercase;
+}
+
+/* Behind a transparent overlay preview, so "transparent" reads as transparent
+   instead of as a black card. Follows the theme like everything else. */
+@utility checkerboard {
+    background-image: repeating-conic-gradient(var(--c-fill) 0% 25%, var(--c-canvas) 0% 50%);
+    background-size: 20px 20px;
+}
+
+@utility num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "ss01";
+    letter-spacing: -0.01em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
