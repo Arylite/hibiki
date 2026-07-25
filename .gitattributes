@@ -1,0 +1,13 @@
+# One line ending in the repository and in every working tree, whatever each
+# machine's core.autocrlf happens to be set to. The CI runners are Linux and
+# Windows, and shell steps run under bash on both.
+* text=auto eol=lf
+
+# Never touched: normalising these corrupts them.
+*.png binary
+*.ico binary
+*.icns binary
+*.woff2 binary
+*.wav binary
+*.mp3 binary
+*.ogg binary

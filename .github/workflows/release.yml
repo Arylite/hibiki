@@ -1,0 +1,111 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*.*.*"]
+
+# Deny by default; only the publishing job gets write access, and only to
+# repository contents.
+permissions: {}
+
+# Never cancel a run that may already be uploading installers.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  publish:
+    name: Build and publish
+    runs-on: windows-latest
+    permissions:
+      # Needed to create the release, push its tag and upload the installers.
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      # A push to main ships a dev prerelease; a vX.Y.Z tag ships the real
+      # thing. The tag has to agree with the version the app will report
+      # about itself, or the installer and the release page disagree.
+      - name: Work out what is being released
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          version=$(node -p "require('./src-tauri/tauri.conf.json').version")
+
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            tag="${GITHUB_REF#refs/tags/}"
+            if [[ "${tag}" != "v${version}" ]]; then
+              echo "::error::Tag ${tag} does not match version ${version} in src-tauri/tauri.conf.json"
+              exit 1
+            fi
+            {
+              echo "tag=${tag}"
+              echo "name=Hibiki ${tag}"
+              echo "prerelease=false"
+              echo "body=Download the installer below. Built from ${GITHUB_SHA}."
+            } >> "$GITHUB_OUTPUT"
+          else
+            {
+              echo "tag=v${version}-dev.${GITHUB_RUN_NUMBER}"
+              echo "name=Hibiki v${version} dev build ${GITHUB_RUN_NUMBER}"
+              echo "prerelease=true"
+              echo "body=Unreleased build of main, published automatically from ${GITHUB_SHA}. Expect rough edges."
+            } >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      # Cheap insurance: main can go red between a merge and this run, and a
+      # broken build is better caught here than by whoever downloads it.
+      - name: Verify before publishing
+        run: |
+          pnpm build
+          cargo test --manifest-path src-tauri/Cargo.toml -- --skip nowplaying::
+
+      - name: Build the installers and publish
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ steps.release.outputs.tag }}
+          releaseName: ${{ steps.release.outputs.name }}
+          releaseBody: ${{ steps.release.outputs.body }}
+          releaseDraft: false
+          prerelease: ${{ steps.release.outputs.prerelease }}
+
+      # Every push to main leaves a prerelease behind, so keep the newest few
+      # and let the rest go. Tagged releases are never touched.
+      - name: Prune old dev builds
+        if: steps.release.outputs.prerelease == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh release list --limit 100 --json tagName,createdAt,isPrerelease \
+            --jq '[.[] | select(.isPrerelease and (.tagName | test("-dev\\.[0-9]+$")))]
+                  | sort_by(.createdAt) | reverse | .[5:] | .[].tagName' \
+          | while read -r old; do
+              echo "removing ${old}"
+              gh release delete "${old}" --cleanup-tag --yes
+            done
