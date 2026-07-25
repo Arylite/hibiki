@@ -29,7 +29,7 @@ tower-http = { version = "0.6", features = ["fs", "cors"] }
 tokio-tungstenite = { version = "0.24", features = ["native-tls"] }
 futures-util = "0.3"
 reqwest = { version = "0.12", features = ["json"] }
-rusqlite = { version = "0.32", features = ["bundled"] }
+rusqlite = { version = "0.40", features = ["bundled"] }
 # Windows-only app, so no cfg gating: GSMTC is what carries track metadata.
 windows = { version = "0.61", features = [
     "Media_Control",
