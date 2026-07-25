@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
-import logo from "@/assets/logo.png";
+import { Logo } from "@/components/ui/logo";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 const WORD = "REBORN";
@@ -45,15 +45,13 @@ export function BootSplash() {
           transition={{ duration: 0.24, ease: "easeInOut" }}
           className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-canvas select-none"
         >
-          <motion.img
-            src={logo}
-            alt=""
-            draggable={false}
-            className="size-9"
+          <motion.div
             initial={reduced ? { opacity: 0 } : { opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: EASE_OUT }}
-          />
+          >
+            <Logo size={36} />
+          </motion.div>
 
           <motion.h1
             className="mt-5 text-[32px] leading-none font-semibold tracking-[-0.03em] text-ink"

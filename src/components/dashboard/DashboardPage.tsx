@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { ChevronRight, ExternalLink, Play } from "lucide-react";
 
-import logo from "@/assets/logo.png";
 import { Page, PageHeader, Stack } from "@/components/layout/Page";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import { CopyButton } from "@/components/ui/copy-button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { EventList } from "@/components/ui/event-list";
 import { Group, Row, RowButton, Rows } from "@/components/ui/group";
+import { Logo } from "@/components/ui/logo";
 import { Segmented } from "@/components/ui/segmented";
 import { LoadingPane } from "@/components/ui/skeleton";
 import { StatusDot } from "@/components/ui/status-dot";
@@ -117,7 +117,7 @@ function Dashboard() {
             )}
           </>
         }
-        aside={<img src={logo} alt="" draggable={false} className="hidden size-14 shrink-0 @[860px]:block" />}
+        aside={<Logo size={56} className="hidden @[860px]:block" />}
       />
 
       <Stack>

@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 
-import logo from "@/assets/logo.png";
+import { Logo } from "@/components/ui/logo";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatusDot } from "@/components/ui/status-dot";
 import { CONNECTION_LABEL, CONNECTION_TONE, connectionState } from "@/lib/connection";
@@ -31,7 +31,7 @@ export function Sidebar() {
   return (
     <aside className="flex w-[228px] shrink-0 flex-col border-r border-line">
       <div data-tauri-drag-region className="flex h-11 shrink-0 items-center gap-2 px-4 select-none">
-        <img src={logo} alt="" className="size-[22px]" draggable={false} />
+        <Logo size={22} />
         <span className="text-body font-semibold tracking-tight text-ink">Hibiki</span>
       </div>
 
