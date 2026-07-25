@@ -31,22 +31,19 @@ pub fn run() {
         .setup(|app| {
             let app_handle = app.handle().clone();
 
-            // The dashboard shows Twitch credentials and stream config - it
-            // has no reason to ever appear in a screen/window capture (OBS
-            // Display Capture, Discord/Zoom screen share, Windows Game Bar).
-            if let Some(window) = app.get_webview_window("main") {
-                if let Err(err) = window.set_content_protected(true) {
-                    eprintln!("failed to enable capture protection: {err}");
-                }
-            }
-
             let data_dir = app.path().app_data_dir().expect("no app data dir available");
             std::fs::create_dir_all(&data_dir).expect("failed to create app data dir");
             let media_dir = data_dir.join("media");
             std::fs::create_dir_all(&media_dir).expect("failed to create media dir");
             let conn = db::init(&data_dir.join("hibiki.db"));
-            let port = db::load_settings(&conn).ws_port;
+            let settings = db::load_settings(&conn);
+            let port = settings.ws_port;
             let has_credentials = db::load_credentials(&conn).is_some();
+
+            // The window shows Twitch credentials and stream config, so it
+            // stays out of screen captures by default. Some streamers do want
+            // to show it on stream, which is what the setting is for.
+            commands::apply_capture_protection(app.handle(), settings.hide_from_capture);
 
             let state = Arc::new(AppState::new(conn, media_dir));
             app.manage(state.clone());

@@ -24,10 +24,14 @@
 /* ─────────────────────────────────────────────────────────────────────────
    Palette
 
-   Deep indigo, hot pink, white. The indigo is the field and does almost all
-   of the work; the pink is spent only on what is live, selected or primary.
-   Amber and coral carry the two states pink cannot say — needs attention,
-   and broken.
+   Muted indigo, dusty rose, white. The indigo is the field and does almost
+   all of the work; the rose is spent only on what is live, selected or
+   primary. Amber and terracotta carry the two states it cannot say — needs
+   attention, and broken.
+
+   Chroma is deliberately low across the whole set. This window sits open for
+   a whole broadcast next to OBS, and a saturated field is the first thing to
+   tire the eye; the hues are the same as the brand, held quiet.
 
    Dark is the default set. Values live here as raw variables and are
    referenced from @theme, which is what lets the whole app follow the system
@@ -39,60 +43,60 @@
        renders for anyone whose system expresses no preference at all. */
     color-scheme: dark;
 
-    --c-canvas: #0A0836;
-    --c-surface: #12104A;
-    --c-fill: #1A1758;
-    --c-fill-strong: #252169;
-    --c-line: #221F5F;
-    --c-line-strong: #332E7D;
+    --c-canvas: #14131C;
+    --c-surface: #1C1B26;
+    --c-fill: #242231;
+    --c-fill-strong: #2E2C3C;
+    --c-line: #292734;
+    --c-line-strong: #3A3747;
 
-    --c-ink: #F5F3FF;
-    --c-ink-2: #B3AEE0;
-    --c-ink-3: #918BC7;
+    --c-ink: #EDECF2;
+    --c-ink-2: #A5A2B4;
+    --c-ink-3: #8A8797;
 
-    --c-accent: #FF3D8B;
-    --c-accent-hover: #FF63A4;
-    --c-accent-ink: #14082C;
-    --c-accent-soft: #33124F;
+    --c-accent: #E17A9E;
+    --c-accent-hover: #E98FAE;
+    --c-accent-ink: #1A0E14;
+    --c-accent-soft: #2E2230;
 
-    --c-warn: #F5B93B;
-    --c-warn-soft: #3A2A16;
-    --c-danger: #FF6A4D;
-    --c-danger-hover: #FF8168;
-    --c-danger-soft: #3B1A18;
+    --c-warn: #D6A85E;
+    --c-warn-soft: #2C2820;
+    --c-danger: #DB7A66;
+    --c-danger-hover: #E58C79;
+    --c-danger-soft: #2E2220;
 
-    --e-pop: 0 16px 40px -12px rgb(2 1 20 / 0.7), 0 4px 12px -4px rgb(2 1 20 / 0.5);
-    --e-raise: 0 1px 2px rgb(2 1 20 / 0.3);
+    --e-pop: 0 16px 40px -12px rgb(8 7 14 / 0.65), 0 4px 12px -4px rgb(8 7 14 / 0.45);
+    --e-raise: 0 1px 2px rgb(8 7 14 / 0.28);
 }
 
 @media (prefers-color-scheme: light) {
     :root {
         color-scheme: light;
 
-        --c-canvas: #F6F5FC;
+        --c-canvas: #F7F6F9;
         --c-surface: #FFFFFF;
-        --c-fill: #F0EEFA;
-        --c-fill-strong: #E3E0F4;
-        --c-line: #E7E4F5;
-        --c-line-strong: #D3CFEB;
+        --c-fill: #F1F0F5;
+        --c-fill-strong: #E5E3EC;
+        --c-line: #E8E6EE;
+        --c-line-strong: #D5D2DE;
 
-        --c-ink: #120E4E;
-        --c-ink-2: #4C4790;
-        --c-ink-3: #7B76AE;
+        --c-ink: #1D1B28;
+        --c-ink-2: #55526A;
+        --c-ink-3: #66637A;
 
-        --c-accent: #D0146F;
-        --c-accent-hover: #B30E5E;
+        --c-accent: #A85176;
+        --c-accent-hover: #8F4362;
         --c-accent-ink: #FFFFFF;
-        --c-accent-soft: #FCE7F2;
+        --c-accent-soft: #F5EAEF;
 
-        --c-warn: #8A5B0F;
-        --c-warn-soft: #FAF0DB;
-        --c-danger: #C0392B;
-        --c-danger-hover: #A32E22;
-        --c-danger-soft: #FBEAE7;
+        --c-warn: #856439;
+        --c-warn-soft: #F4EFE5;
+        --c-danger: #A65A4A;
+        --c-danger-hover: #8D4839;
+        --c-danger-soft: #F6EBE8;
 
-        --e-pop: 0 12px 32px -12px rgb(18 14 78 / 0.22), 0 4px 10px -4px rgb(18 14 78 / 0.12);
-        --e-raise: 0 1px 2px rgb(18 14 78 / 0.06);
+        --e-pop: 0 12px 32px -12px rgb(29 27 40 / 0.20), 0 4px 10px -4px rgb(29 27 40 / 0.10);
+        --e-raise: 0 1px 2px rgb(29 27 40 / 0.06);
     }
 }
 

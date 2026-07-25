@@ -64,6 +64,10 @@ pub struct Settings {
     pub alert_position: AlertPosition,
     /// Breathing room between two alerts, so a raid does not machine-gun them.
     pub alert_gap_ms: u32,
+    /// Keeps the window out of OBS display capture, screen shares and the
+    /// Game Bar. On by default: the window shows an access token's worth of
+    /// account state.
+    pub hide_from_capture: bool,
     pub now_playing: NowPlayingWidget,
     pub goal: GoalWidget,
     pub chat: ChatWidget,
@@ -78,6 +82,7 @@ impl Default for Settings {
             client_id: String::new(),
             alert_position: AlertPosition::Center,
             alert_gap_ms: 600,
+            hide_from_capture: true,
             now_playing: NowPlayingWidget::default(),
             goal: GoalWidget::default(),
             chat: ChatWidget::default(),

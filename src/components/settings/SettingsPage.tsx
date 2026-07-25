@@ -8,6 +8,7 @@ import { Group, Panel, Row, Rows } from "@/components/ui/group";
 import { Input } from "@/components/ui/input";
 import { LoadingPane } from "@/components/ui/skeleton";
 import { SliderRow } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/toast";
 import { useAuthStore } from "@/stores/authStore";
 import { useServerStatusStore } from "@/stores/serverStatusStore";
@@ -185,9 +186,21 @@ function AdvancedSection() {
     setWsPort(String(settings?.wsPort ?? ""));
   };
 
+  if (!settings) return null;
+
   return (
     <Group title="Advanced">
       <Rows>
+        <Row
+          label="Hide from screen capture"
+          description="Keeps this window out of OBS display capture, screen shares and the Game Bar. Turn it off to show Hibiki on stream — your Twitch account details are on screen here."
+        >
+          <Switch
+            checked={settings.hideFromCapture}
+            onCheckedChange={(hideFromCapture) => update({ hideFromCapture })}
+          />
+        </Row>
+
         <Row label="Local server port" description="Restart Hibiki for a new port to take effect.">
           <div className="flex flex-col items-end gap-1">
             <Input

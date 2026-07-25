@@ -122,6 +122,8 @@ export const SettingsSchema = z.object({
   clientId: z.string(),
   alertPosition: AlertPositionSchema,
   alertGapMs: z.number().int(),
+  /** Keeps the window out of OBS display capture and screen shares. */
+  hideFromCapture: z.boolean(),
   nowPlaying: NowPlayingWidgetSchema,
   goal: GoalWidgetSchema,
   chat: ChatWidgetSchema,

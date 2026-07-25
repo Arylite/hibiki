@@ -17,10 +17,24 @@ pub fn get_settings(state: State<'_, Arc<AppState>>) -> Settings {
 }
 
 #[tauri::command]
-pub fn update_settings(state: State<'_, Arc<AppState>>, settings: Settings) -> Settings {
+pub fn update_settings(state: State<'_, Arc<AppState>>, app: AppHandle, settings: Settings) -> Settings {
     db::save_settings(&state.db.lock().unwrap(), &settings);
+    // Applied on the spot rather than at the next launch: the streamer is
+    // toggling it because they want to see the window in a capture now.
+    apply_capture_protection(&app, settings.hide_from_capture);
     push_overlay_config(&state);
     settings
+}
+
+/// Windows drops the window out of every screen capture at the compositor,
+/// so nothing that records the desktop can see it. A failure is not fatal -
+/// on a platform without display affinity the window is simply capturable.
+pub fn apply_capture_protection(app: &AppHandle, protected: bool) {
+    if let Some(window) = app.get_webview_window("main") {
+        if let Err(err) = window.set_content_protected(protected) {
+            eprintln!("failed to set capture protection: {err}");
+        }
+    }
 }
 
 #[tauri::command]
