@@ -57,9 +57,22 @@ const AMOUNT_LABELS: Partial<Record<AlertKind, string>> = {
 
 export function AlertDetail({ kind, style }: { kind: AlertKind; style: AlertStyle }) {
   const update = useAlertStyleStore((s) => s.update);
+  const [testing, setTesting] = useState(false);
 
   const { label, description } = ALERT_META[kind];
   const amountLabel = AMOUNT_LABELS[kind];
+
+  const sendTest = async () => {
+    setTesting(true);
+    try {
+      await alertsService.sendTest(kind);
+      toast.ok(`Test ${label.toLowerCase()} sent to the overlay`);
+    } catch (err) {
+      toast.error("Could not send the test alert", String(err));
+    } finally {
+      setTimeout(() => setTesting(false), 600);
+    }
+  };
 
   return (
     <div className="mx-auto w-full max-w-[1000px] px-8 pt-7 pb-16">
@@ -79,7 +92,7 @@ export function AlertDetail({ kind, style }: { kind: AlertKind; style: AlertStyl
         </div>
       </header>
 
-      <AlertLivePreview kind={kind} style={style} />
+      <AlertLivePreview kind={kind} style={style} testing={testing} onTest={sendTest} />
 
       <Masonry className="mt-8">
         <Block>
@@ -306,27 +319,39 @@ export function AlertDetail({ kind, style }: { kind: AlertKind; style: AlertStyl
           </Group>
         </Block>
       </Masonry>
+
+      {/* Follows the scroll: trying a change should never mean going back up
+          for the button. Only the button takes clicks, not the strip. */}
+      <div className="pointer-events-none sticky bottom-5 z-10 mt-6 flex justify-end">
+        <Button
+          variant="primary"
+          size="lg"
+          className="pointer-events-auto shadow-pop"
+          onClick={sendTest}
+          disabled={testing}
+        >
+          <Play />
+          {testing ? "Sent to the overlay" : "Test on stream"}
+        </Button>
+      </div>
     </div>
   );
 }
 
 /** The real AlertCard against a sample payload. */
-function AlertLivePreview({ kind, style }: { kind: AlertKind; style: AlertStyle }) {
-  const [testing, setTesting] = useState(false);
+function AlertLivePreview({
+  kind,
+  style,
+  testing,
+  onTest,
+}: {
+  kind: AlertKind;
+  style: AlertStyle;
+  testing: boolean;
+  onTest: () => void;
+}) {
   // Bumping the key remounts the card, which replays its entrance animation.
   const [replay, setReplay] = useState(0);
-
-  const sendTest = async () => {
-    setTesting(true);
-    try {
-      await alertsService.sendTest(kind);
-      toast.ok(`Test ${ALERT_META[kind].label.toLowerCase()} sent to the overlay`);
-    } catch (err) {
-      toast.error("Could not send the test alert", String(err));
-    } finally {
-      setTimeout(() => setTesting(false), 600);
-    }
-  };
 
   return (
     <StreamPreview
@@ -337,7 +362,7 @@ function AlertLivePreview({ kind, style }: { kind: AlertKind; style: AlertStyle 
             <RotateCcw />
             Replay
           </Button>
-          <Button variant="secondary" size="sm" onClick={sendTest} disabled={testing}>
+          <Button variant="secondary" size="sm" onClick={onTest} disabled={testing}>
             <Play />
             {testing ? "Sent" : "Test on stream"}
           </Button>

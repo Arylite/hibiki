@@ -1,6 +1,6 @@
 [package]
 name = "hibiki"
-version = "0.3.0"
+version = "0.4.0"
 description = "Twitch alerts, chat, now-playing and goal widgets for OBS"
 authors = ["Reborn Esport"]
 edition = "2021"

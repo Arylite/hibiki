@@ -13,7 +13,7 @@ import { LoadingPane } from "@/components/ui/skeleton";
 import { SliderRow } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/toast";
-import { downloadStyleFile, readStyleFile } from "@/lib/style-file";
+import { downloadStyleFile, embedMedia, readStyleFile, restoreMedia } from "@/lib/style-file";
 import { useAlertStyleStore } from "@/stores/alertStyleStore";
 import { useAuthStore } from "@/stores/authStore";
 import { useServerStatusStore } from "@/stores/serverStatusStore";
@@ -175,11 +175,33 @@ function StylesSection() {
   const styles = useAlertStyleStore((s) => s.styles);
   const updateStyle = useAlertStyleStore((s) => s.update);
   const input = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState<"exporting" | "importing" | null>(null);
+
+  const exportFile = async () => {
+    if (!settings || !styles) return;
+    setBusy("exporting");
+    try {
+      downloadStyleFile(
+        await embedMedia({
+          hibikiStyles: 1,
+          styles,
+          nowPlaying: settings.nowPlaying,
+          goal: settings.goal,
+          chat: settings.chat,
+        }),
+      );
+    } catch (err) {
+      toast.error("Could not export the styles", String(err));
+    } finally {
+      setBusy(null);
+    }
+  };
 
   const importFile = async (file: File | undefined) => {
     if (!file) return;
+    setBusy("importing");
     try {
-      const incoming = await readStyleFile(file);
+      const incoming = await restoreMedia(await readStyleFile(file));
       for (const [kind, style] of Object.entries(incoming.styles ?? {})) {
         updateStyle(kind as AlertKind, style);
       }
@@ -197,29 +219,21 @@ function StylesSection() {
     } catch (err) {
       toast.error("That file is not a Hibiki style file", String(err));
     } finally {
+      setBusy(null);
       if (input.current) input.current.value = "";
     }
   };
 
   return (
-    <Group title="Styles" description="The five alerts and the three on-stream widgets, as one file.">
+    <Group
+      title="Styles"
+      description="The alerts and the three on-stream widgets, as one file. Images, sounds and backdrops travel inside it."
+    >
       <Rows>
-        <Row label="Export" description="Writes them to your downloads folder.">
-          <Button
-            disabled={!settings || !styles}
-            onClick={() => {
-              if (!settings || !styles) return;
-              downloadStyleFile({
-                hibikiStyles: 1,
-                styles,
-                nowPlaying: settings.nowPlaying,
-                goal: settings.goal,
-                chat: settings.chat,
-              });
-            }}
-          >
+        <Row label="Export" description="Writes it to your downloads folder.">
+          <Button disabled={!settings || !styles || busy !== null} onClick={exportFile}>
             <Download />
-            Export
+            {busy === "exporting" ? "Collecting media..." : "Export"}
           </Button>
         </Row>
         <Row label="Import" description="Replaces the looks in the file. Everything else is left alone.">
@@ -230,9 +244,9 @@ function StylesSection() {
             className="hidden"
             onChange={(e) => importFile(e.target.files?.[0])}
           />
-          <Button onClick={() => input.current?.click()}>
+          <Button onClick={() => input.current?.click()} disabled={busy !== null}>
             <Upload />
-            Import
+            {busy === "importing" ? "Importing..." : "Import"}
           </Button>
         </Row>
       </Rows>
