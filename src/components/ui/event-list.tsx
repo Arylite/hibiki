@@ -13,11 +13,7 @@ interface EventListProps {
   className?: string;
 }
 
-/**
- * One event, one line, read left to right as a sentence: who, what, when. The
- * kind of the event is carried by its icon rather than a column of labels —
- * five shapes are quicker to scan than five words.
- */
+/** One event per line: who, what, when. The kind is carried by its icon. */
 export function EventList({ alerts, now, showClock, className }: EventListProps) {
   return (
     <ul className={cn("divide-y divide-line", className)}>
@@ -38,7 +34,7 @@ export function EventList({ alerts, now, showClock, className }: EventListProps)
             <p className="min-w-0 flex-1 truncate text-body">
               <span className="font-medium text-ink">{alert.username}</span>{" "}
               <span className="text-ink-2">{describeAlert(alert)}</span>
-              {alert.message && <span className="text-ink-3"> · “{alert.message}”</span>}
+              {alert.message && <span className="text-ink-3"> - "{alert.message}"</span>}
             </p>
 
             <span className="num shrink-0 text-sm text-ink-3">{formatRelative(alert.createdAt, now)}</span>

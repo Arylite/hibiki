@@ -10,11 +10,7 @@ import { useServerStatusStore } from "@/stores/serverStatusStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { NAV_GROUPS, NAV_PLANNED } from "@/types/tab";
 
-/**
- * The navigation sits on the canvas with no chrome of its own; only the
- * current page is raised out of it. Nothing else here competes with the
- * content on the right.
- */
+/** Navigation on the canvas, with only the current page raised out of it. */
 export function Sidebar() {
   const user = useAuthStore((s) => s.user);
   const settings = useSettingsStore((s) => s.settings);
@@ -64,8 +60,8 @@ export function Sidebar() {
                 </NavLink>
               ))}
 
-              {/* Announced but unbuilt: the slot is visible so the shape of the
-                  navigation does not change when they land. */}
+              {/* Announced but unbuilt, so the navigation keeps its shape when
+                  they land. */}
               {group.label === "Stream" &&
                 NAV_PLANNED.map((item) => (
                   <div
@@ -103,8 +99,8 @@ export function Sidebar() {
             </p>
           )
         ) : (
-          // A skeleton rather than nothing: the block used to be withheld until
-          // settings landed, which moved the whole footer on first paint.
+          // A skeleton rather than nothing, so the footer does not move once
+          // settings land.
           <div className="flex items-center gap-2.5 px-1">
             <Skeleton className="size-6 rounded-full" />
             <div className="flex min-w-0 flex-1 flex-col gap-1">

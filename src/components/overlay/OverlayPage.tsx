@@ -64,7 +64,7 @@ export function OverlayPage() {
               {previewUrl && <iframe src={previewUrl} title="Overlay preview" className="size-full border-0" />}
             </div>
             <div className="mt-2 flex items-center gap-2 px-0.5">
-              <span className="num text-sm text-ink-3">1920×1080 · served live</span>
+              <span className="num text-sm text-ink-3">1920x1080 - served live</span>
               <div className="ml-auto flex items-center gap-1">
                 <CopyButton value={overlayUrl} label="Copy URL" />
                 <Button
@@ -113,7 +113,7 @@ export function OverlayPage() {
               onChange={(alertPosition) => update({ alertPosition })}
             />
             <p className="mt-2.5 px-0.5 text-sm text-ink-3">
-              Everything else about alerts — image, sound, colours — lives in Alerts.
+              Everything else about alerts - image, sound, colours - lives in Alerts.
             </p>
           </Group>
 

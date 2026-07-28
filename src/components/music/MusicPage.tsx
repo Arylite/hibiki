@@ -45,12 +45,10 @@ export function MusicPage() {
     <Page>
       <PageHeader
         title="Music"
-        lede="Hibiki reads the same session Windows shows in its media flyout — Spotify, a browser, anything that answers the media keys."
+        lede="Hibiki reads the same session Windows shows in its media flyout - Spotify, a browser, anything that answers the media keys."
       />
 
       <Stack>
-        {/* Live control and static configuration are two different jobs, so
-            they read as two: the thing happening now, then the settings. */}
         <div className="grid grid-cols-1 gap-7 @[880px]:grid-cols-2">
           <Group title="Now playing">
             <Panel>
@@ -66,11 +64,10 @@ export function MusicPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <StatusDot tone={track.playing ? "ok" : "idle"} />
-                      {/* Not a heading: the group above already names this. */}
                       <p className="truncate text-title text-ink">{track.title}</p>
                     </div>
                     <p className="mt-1 flex items-center gap-2 truncate text-body text-ink-2">
-                      {[track.artist, track.album].filter(Boolean).join(" · ")}
+                      {[track.artist, track.album].filter(Boolean).join(" - ")}
                       <Badge>{sourceLabel(track.source)}</Badge>
                     </p>
                     <div className="mt-2.5 flex items-center gap-1">
@@ -101,7 +98,6 @@ export function MusicPage() {
 
           <Group title="On stream">
             <StreamPreview notice={widget.enabled ? undefined : "Not shown on stream"}>
-              {/* The real overlay component, so the preview cannot drift. */}
               <StreamWidget
                 track={track ?? SAMPLE}
                 config={{ ...widget, enabled: true, hideWhenPaused: false }}
@@ -109,7 +105,7 @@ export function MusicPage() {
               />
             </StreamPreview>
             <p className="mt-1 px-0.5 text-sm text-ink-3">
-              {track ? "Your current track, at stream scale." : "Sample track — nothing is playing right now."}
+              {track ? "Your current track, at stream scale." : "Sample track - nothing is playing right now."}
             </p>
           </Group>
         </div>
@@ -127,7 +123,7 @@ export function MusicPage() {
                 <Row label="Album" description="Added to the same second line.">
                   <Switch checked={widget.showAlbum} onCheckedChange={(showAlbum) => patch({ showAlbum })} />
                 </Row>
-                <Row label="Player name" description="Adds “Spotify”, “Chrome”…">
+                <Row label="Player name" description="Adds 'Spotify', 'Chrome'...">
                   <Switch checked={widget.showSource} onCheckedChange={(showSource) => patch({ showSource })} />
                 </Row>
                 <Row label="Cover art" description="Falls back to the equaliser when the player sends none.">

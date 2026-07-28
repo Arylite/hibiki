@@ -10,8 +10,7 @@ interface EmptyStateProps {
   className?: string;
 }
 
-/** One shape for every empty state in the app. The mascot appears here and
- *  nowhere else at size — an empty screen is the right place for a face. */
+/** One shape for every empty state in the app. */
 export function EmptyState({ title, description, action, className }: EmptyStateProps) {
   return (
     <div className={cn("flex flex-col items-center px-6 py-12 text-center", className)}>

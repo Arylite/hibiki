@@ -62,7 +62,7 @@ export function describeAlert(alert: AlertPayload): string {
     case "follow":
       return "followed";
     case "subscribe":
-      return alert.tier ? `subscribed · ${alert.tier}` : "subscribed";
+      return alert.tier ? `subscribed - ${alert.tier}` : "subscribed";
     case "subscribeGift": {
       const count = alert.giftCount ?? 1;
       return `gifted ${count} sub${count > 1 ? "s" : ""}`;

@@ -12,10 +12,8 @@ import { useAlertStyleStore } from "@/stores/alertStyleStore";
 import type { AlertKind } from "@/types/alert";
 import type { AlertStyle } from "@/types/settings";
 
-/**
- * One alert's look, in the pieces a streamer thinks in. `enabled` is never in
- * here: whether an alert fires is a decision about the alert, not its style.
- */
+/** One alert's look, in the pieces a streamer thinks in. `enabled` is never in
+ *  here: whether an alert fires is a decision about the alert, not its style. */
 const ASPECTS = [
   { id: "text", label: "Wording", fields: ["title", "message"] },
   { id: "media", label: "Image and sound", fields: ["image", "imageSize", "imageRadius", "sound", "volume"] },
@@ -50,12 +48,8 @@ function toggle<T>(values: Set<T>, value: T): Set<T> {
   return next;
 }
 
-/**
- * Styling five alerts to match used to mean setting the same nine controls
- * five times. This sends one alert's look to the others — everything, or only
- * the parts you picked, so a shared frame does not overwrite five different
- * images.
- */
+/** Sends one alert's look to the others: everything, or only the parts you
+ *  picked, so copying a frame does not overwrite four different images. */
 export function CopyStyleDialog({ source, style }: { source: AlertKind; style: AlertStyle }) {
   const update = useAlertStyleStore((s) => s.update);
   const [open, setOpen] = useState(false);

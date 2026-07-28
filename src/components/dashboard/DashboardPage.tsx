@@ -54,7 +54,6 @@ function Dashboard() {
   const [kind, setKind] = useState<AlertKind>("follow");
   const [testing, setTesting] = useState(false);
 
-  // Auth failures used to be a red line beside the button. They are loud now.
   useEffect(() => {
     if (authError) toast.error("Twitch sign-in failed", authError);
   }, [authError]);
@@ -74,7 +73,7 @@ function Dashboard() {
 
   const headline = headlines(
     lastAlert
-      ? `Events are arriving — the last one landed ${formatRelative(lastAlert.createdAt, now)}.`
+      ? `Events are arriving - the last one landed ${formatRelative(lastAlert.createdAt, now)}.`
       : "Nothing has come in yet. Send a test alert to check the wiring.",
   )[state];
 
@@ -109,7 +108,7 @@ function Dashboard() {
             )}
             {state === "signed-out" && (
               <Button variant="primary" size="lg" onClick={login} disabled={authStatus === "loading"}>
-                {authStatus === "loading" ? "Waiting for Twitch…" : "Connect Twitch"}
+                {authStatus === "loading" ? "Waiting for Twitch..." : "Connect Twitch"}
               </Button>
             )}
             {state === "no-overlay" && (
@@ -192,8 +191,6 @@ function Dashboard() {
                 Open
               </Button>
             </Row>
-            {/* The test used to be hardwired to a follow, which left the other
-                four kinds untestable from here. */}
             <Row label="Test alert" description="Fires a sample event through the real overlay.">
               <Segmented options={KIND_OPTIONS} value={kind} onChange={setKind} />
               <Button variant="secondary" onClick={sendTest} disabled={testing}>
@@ -228,7 +225,7 @@ function Dashboard() {
   );
 }
 
-/** The one question the dashboard answers, in the five states it can be in. */
+/** Is Hibiki working right now, in the five states it can be in. */
 const headlines = (listening: string): Record<ConnectionState, { title: string; detail: string }> => ({
   unconfigured: {
     title: "Twitch app not set up",

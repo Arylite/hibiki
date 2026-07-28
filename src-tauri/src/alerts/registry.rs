@@ -129,8 +129,8 @@ impl AlertKind {
     }
 }
 
-/// Every scope the catalogue needs, deduped - the login URL asks for exactly
-/// what the subscriptions require, no more.
+/// Every scope the catalogue needs, deduped, so the login URL asks for exactly
+/// what the subscriptions require.
 pub fn required_scopes() -> String {
     let mut scopes: Vec<&str> = ALERTS.iter().filter_map(|def| def.scope).collect();
     scopes.sort_unstable();
@@ -216,9 +216,8 @@ mod tests {
         assert_eq!(back.get(AlertKind::Follow).title, "New Follower");
     }
 
-    /// The keys are the same ones the old named-field struct wrote, so an
-    /// install that predates this map reads back unchanged - and a kind added
-    /// later fills itself in rather than needing a migration.
+    /// A kind missing from the stored sheet fills itself in from its row
+    /// rather than needing a migration.
     #[test]
     fn missing_kinds_fall_back_to_their_row_default() {
         let stored: AlertStyles =

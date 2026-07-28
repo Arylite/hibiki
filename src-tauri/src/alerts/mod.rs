@@ -10,10 +10,8 @@ use crate::models::{Alert, AlertKind};
 use crate::state::AppState;
 use crate::{db, server};
 
-/// Pushes an alert through the pipeline: sqlite history, local WS broadcast
-/// (overlay clients) and a Tauri event (dashboard UI). Used for both real
-/// EventSub notifications and the "send test" button, so a test alert
-/// exercises the exact same path a real one would.
+/// Pushes an alert through the pipeline: sqlite history, WS broadcast to the
+/// overlays, Tauri event to the window. Real events and test alerts alike.
 pub fn dispatch(state: &AppState, app: &AppHandle, alert: Alert) {
     state
         .last_alert_at
@@ -33,8 +31,7 @@ pub fn dispatch(state: &AppState, app: &AppHandle, alert: Alert) {
 }
 
 /// Filters a real event: switched off, too small, or too soon after the last
-/// one of its kind. Test alerts bypass this on purpose - you press the button
-/// precisely to see the thing you just configured.
+/// one of its kind. Test alerts bypass it on purpose.
 pub fn should_dispatch(state: &AppState, alert: &Alert) -> bool {
     let style = db::load_alert_styles(&state.db.lock().unwrap()).get(alert.kind);
     if !style.enabled {
@@ -75,9 +72,7 @@ pub fn new_alert(kind: AlertKind) -> Alert {
     }
 }
 
-/// A representative payload, clearly test data (obvious usernames), for the
-/// "send test" feature - it lets a streamer preview and position their overlay
-/// without waiting for a real event.
+/// A representative payload with obviously fake usernames, for the test button.
 pub fn sample_alert(kind: AlertKind) -> Alert {
     let mut alert = new_alert(kind);
     alert.username = "test_viewer".to_string();

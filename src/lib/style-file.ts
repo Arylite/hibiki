@@ -8,11 +8,9 @@ import {
   NowPlayingWidgetSchema,
 } from "@/types/settings";
 
-/**
- * A whole look, in one file: the five alerts and the three on-stream widgets.
- * Every field is optional and merged onto what is already there, so a file
- * written by another version is worth reading rather than rejecting.
- */
+/** A whole look in one file: the alerts and the three on-stream widgets. Every
+ *  field is optional and merged onto what is there, so a file written by
+ *  another version is worth reading rather than rejecting. */
 export const StyleFileSchema = z.object({
   hibikiStyles: z.literal(1),
   // Partial, not `record`: a record keyed by an enum demands every alert, and
@@ -34,7 +32,7 @@ export function downloadStyleFile(file: StyleFile) {
   URL.revokeObjectURL(url);
 }
 
-/** Throws on anything that is not one of ours — the file came from outside. */
+/** Throws on anything that is not one of ours - the file came from outside. */
 export async function readStyleFile(file: File): Promise<StyleFile> {
   return StyleFileSchema.parse(JSON.parse(await file.text()));
 }

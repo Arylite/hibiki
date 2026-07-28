@@ -6,8 +6,7 @@ import { cn } from "@/lib/utils";
 import { sourceLabel, type NowPlaying } from "@/types/nowplaying";
 import type { NowPlayingWidget as WidgetConfig } from "@/types/settings";
 
-/** The music strip on stream. Bars animate only while audio is actually
- *  playing — a frozen equaliser next to a paused track would be a lie. */
+/** The music strip on stream. The bars animate only while audio is playing. */
 export function NowPlayingWidget({
   track,
   config,
@@ -29,7 +28,7 @@ export function NowPlayingWidget({
         config.showSource ? sourceLabel(track.source) : "",
       ]
         .filter(Boolean)
-        .join(" · ")
+        .join(" - ")
     : "";
 
   const showArt = config.showArt && track?.art;
@@ -88,12 +87,8 @@ export function NowPlayingWidget({
  *  readable rather than always sliding away from you. */
 const SCROLL_HOLD_S = 1.2;
 
-/**
- * The track title. Long ones either get cut at a character count, or slide
- * back and forth inside the widget — a station name plate rather than an
- * ellipsis. The scroll only runs when the text really does not fit, so a
- * short title never twitches.
- */
+/** The track title: cut at a character count, or slid back and forth inside
+ *  the widget. The scroll only runs when the text does not fit. */
 function Title({ text, config }: { text: string; config: WidgetConfig }) {
   const viewport = useRef<HTMLSpanElement>(null);
   const inner = useRef<HTMLSpanElement>(null);
@@ -101,7 +96,7 @@ function Title({ text, config }: { text: string; config: WidgetConfig }) {
 
   const clipped =
     config.titleMaxChars > 0 && text.length > config.titleMaxChars
-      ? `${text.slice(0, config.titleMaxChars).trimEnd()}…`
+      ? `${text.slice(0, config.titleMaxChars).trimEnd()}...`
       : text;
 
   // Measured after layout, and re-measured whenever the text or the type
@@ -126,7 +121,7 @@ function Title({ text, config }: { text: string; config: WidgetConfig }) {
     return <span className="min-w-0 flex-1 truncate">{clipped}</span>;
   }
 
-  // Out and back, with a rest at each end: travel · hold · travel · hold.
+  // Out and back, with a rest at each end: travel - hold - travel - hold.
   const travel = overflow / Math.max(10, config.titleScrollSpeed);
   const cycle = travel * 2 + SCROLL_HOLD_S * 2;
   const at = (seconds: number) => seconds / cycle;

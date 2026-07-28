@@ -34,14 +34,9 @@ const BAR_SHAPES = [
   { value: "999", label: "Pill" },
 ];
 
-/** The translucent white the bar has always sat on. */
+/** The translucent white the bar sits on. */
 const DEFAULT_TRACK = "rgba(255,255,255,0.22)";
 
-/**
- * Its own page. The goal is a first-class stream widget like Music, but it
- * used to live in a narrow panel inside the Overlay aside, which made the
- * position grid unusable and hid the one number a streamer checks mid-stream.
- */
 export function GoalPage() {
   const settings = useSettingsStore((s) => s.settings);
   const update = useSettingsStore((s) => s.update);
@@ -100,7 +95,6 @@ export function GoalPage() {
 
           <Group title="On stream">
             <StreamPreview notice={goal.enabled ? undefined : "Not shown on stream"}>
-              {/* The real GoalBar, so the preview cannot drift from it. */}
               <GoalBar
                 config={{ ...goal, enabled: true }}
                 state={{ current, target: goal.target }}
@@ -211,7 +205,7 @@ export function GoalPage() {
                     onChange={(value) => patch({ barRadius: Number(value) })}
                   />
                 </Row>
-                <Row label="Show the count" description="“12/50” beside the label.">
+                <Row label="Show the count" description="'12/50' beside the label.">
                   <Switch checked={goal.showValue} onCheckedChange={(showValue) => patch({ showValue })} />
                 </Row>
                 <Row label="Show the percentage">

@@ -86,7 +86,7 @@ fn artwork(props: &MediaProperties) -> Option<String> {
 
 /// Whatever is *playing* wins: `GetCurrentSession` returns the session Windows
 /// considers focused, which is regularly stale or unset while another player
-/// is mid-track, and that showed up as an empty widget.
+/// is mid-track.
 fn pick_session(manager: &SessionManager) -> Option<Session> {
     let mut fallback = None;
     if let Ok(sessions) = manager.GetSessions() {
@@ -107,8 +107,7 @@ fn pick_session(manager: &SessionManager) -> Option<Session> {
     fallback.or_else(|| manager.GetCurrentSession().ok())
 }
 
-/// Drives the player that owns the current session - the same buttons the
-/// keyboard's media keys press.
+/// Drives the player that owns the current session.
 pub fn control(action: &str) -> bool {
     co_init();
     let Some(session) = SessionManager::RequestAsync()
@@ -129,7 +128,7 @@ pub fn control(action: &str) -> bool {
 }
 
 /// Reads the sessions behind Windows' own media flyout, so anything that feeds
-/// that widget - Spotify, browsers, Apple Music - shows up here.
+/// it (Spotify, browsers, Apple Music) shows up here.
 pub fn current() -> Option<NowPlaying> {
     co_init();
     let manager = SessionManager::RequestAsync().ok()?.get().ok()?;

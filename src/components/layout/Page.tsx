@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-/** Two measures: prose-and-settings pages read better narrow, pages built
- *  around a preview earn the extra width. */
+/** Settings pages read better narrow; pages built around a preview take the
+ *  extra width. */
 const WIDTH = {
   narrow: "max-w-[760px]",
   wide: "max-w-[1040px]",
@@ -26,7 +26,6 @@ export function Page({ children, width = "wide", className }: PageProps) {
 
 interface PageHeaderProps {
   title: string;
-  /** One sentence. If it needs two, the screen is doing too much. */
   lede?: ReactNode;
   actions?: ReactNode;
   /** Trailing element, e.g. the mascot on the dashboard. */
@@ -34,8 +33,7 @@ interface PageHeaderProps {
   className?: string;
 }
 
-/** The page title lives here and only here — the window bar carries state
- *  instead, so no word is printed twice on a screen. */
+/** The page title lives here and only here. */
 export function PageHeader({ title, lede, actions, aside, className }: PageHeaderProps) {
   return (
     <header className={cn("mb-8 flex items-start gap-6", className)}>
@@ -54,11 +52,8 @@ export function Stack({ children, className }: { children: ReactNode; className?
   return <div className={cn("flex flex-col gap-7", className)}>{children}</div>;
 }
 
-/**
- * Two columns of groups on a wide window, one on a narrow one — and unlike a
- * grid, the groups keep their reading order and their own heights instead of
- * being stretched to match a neighbour.
- */
+/** Two columns of groups on a wide window, one on a narrow one. Columns, not a
+ *  grid: the groups keep their own heights instead of matching a neighbour. */
 export function Masonry({ children, className }: { children: ReactNode; className?: string }) {
   return <div className={cn("gap-7 @[900px]:columns-2", className)}>{children}</div>;
 }

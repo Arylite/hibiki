@@ -9,8 +9,7 @@ const TONES: Record<StatusTone, string> = {
   idle: "bg-ink-3",
 };
 
-/** The smallest carrier of meaning in the app. Semantic colour lives here and
- *  in a badge — never as a field of colour behind content. */
+/** Semantic colour lives here and in a badge, never behind content. */
 export function StatusDot({ tone, className }: { tone: StatusTone; className?: string }) {
   return <span className={cn("inline-block size-1.5 shrink-0 rounded-full", TONES[tone], className)} />;
 }

@@ -39,7 +39,7 @@ export function MediaField({ accept, value, onChange, preview }: MediaFieldProps
       <input ref={input} type="file" accept={accept} className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
       <Button onClick={() => input.current?.click()} disabled={busy} aria-busy={busy}>
         <Upload />
-        {busy ? "Importing…" : value ? "Replace" : "Choose file"}
+        {busy ? "Importing..." : value ? "Replace" : "Choose file"}
       </Button>
       {value && (
         <Button variant="ghost" size="icon-md" onClick={() => onChange(null)} aria-label="Remove">

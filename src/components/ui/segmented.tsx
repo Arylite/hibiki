@@ -10,11 +10,8 @@ interface SegmentedProps<T extends string> {
   className?: string;
 }
 
-/**
- * A recessed track with one raised choice — the pattern desktops have used for
- * thirty years, so it needs no explaining. RadioGroup brings the role and the
- * arrow-key navigation with it.
- */
+/** One choice from a few. On RadioGroup, which brings the role and the
+ *  arrow-key navigation with it. */
 export function Segmented<T extends string>({ options, value, onChange, className }: SegmentedProps<T>) {
   return (
     <RadioGroup

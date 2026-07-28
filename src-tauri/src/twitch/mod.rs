@@ -3,10 +3,8 @@ pub mod chat;
 pub mod eventsub;
 pub mod helix;
 
-/// Every scope the sign-in has to ask for: what the alert catalogue needs,
-/// plus reading chat. Asking for exactly this and nothing more is the
-/// difference between a permission screen a streamer accepts and one they
-/// close.
+/// Every scope the sign-in asks for: what the alert catalogue needs, plus
+/// reading chat. Nothing beyond that.
 pub fn required_scopes() -> String {
     let mut scopes = crate::alerts::required_scopes();
     scopes.push(' ');

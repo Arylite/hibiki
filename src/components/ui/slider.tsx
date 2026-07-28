@@ -28,7 +28,7 @@ interface SliderRowProps {
   className?: string;
 }
 
-/** Slider plus its readout — the pairing appears nine times across the app. */
+/** Slider plus its readout. */
 function SliderRow({ value, onChange, min, max, step, format, className }: SliderRowProps) {
   return (
     <div className={cn("flex w-full items-center gap-3", className)}>

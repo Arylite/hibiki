@@ -8,7 +8,7 @@ const CANVAS_W = 1920;
 const CANVAS_H = 1080;
 
 interface StreamPreviewProps {
-  /** The real overlay component, rendered at 1920×1080 and scaled down. */
+  /** The real overlay component, rendered at 1920x1080 and scaled down. */
   children: ReactNode;
   /** Said under the frame, e.g. "Not shown on stream". */
   notice?: string;
@@ -17,14 +17,9 @@ interface StreamPreviewProps {
   className?: string;
 }
 
-/**
- * One preview idiom for Alerts, Music and Goal, rendering the actual overlay
- * component so it cannot drift from what goes on stream. The Overlay page
- * keeps its iframe, where the point is proving the local server answers.
- *
- * Measures its own width, so the same preview works in a narrow aside and in
- * a full content column.
- */
+/** Renders the actual overlay component, scaled, so a preview cannot drift
+ *  from what goes on stream. Measures its own width, so it works in a narrow
+ *  aside and in a full content column alike. */
 export function StreamPreview({ children, notice, action, className }: StreamPreviewProps) {
   const frame = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
@@ -34,7 +29,7 @@ export function StreamPreview({ children, notice, action, className }: StreamPre
     if (!node) return;
     // Measured synchronously first: waiting on the observer's callback costs a
     // frame of blank preview, and the callback is only delivered as part of the
-    // rendering lifecycle — which a backgrounded window does not run.
+    // rendering lifecycle - which a backgrounded window does not run.
     setWidth(node.clientWidth);
     const observer = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
     observer.observe(node);
@@ -64,7 +59,7 @@ export function StreamPreview({ children, notice, action, className }: StreamPre
       </div>
 
       <div className="mt-2 flex min-h-6 items-center gap-2 px-0.5">
-        <span className="num text-sm text-ink-3">1920×1080 · {Math.round(scale * 100)}%</span>
+        <span className="num text-sm text-ink-3">1920x1080 - {Math.round(scale * 100)}%</span>
         {notice && <span className="text-sm text-warn">{notice}</span>}
         {action && <div className="ml-auto flex items-center gap-1">{action}</div>}
       </div>

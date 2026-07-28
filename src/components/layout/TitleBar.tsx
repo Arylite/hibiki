@@ -9,11 +9,9 @@ import { useServerStatusStore } from "@/stores/serverStatusStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 // Called lazily, never at module scope: getCurrentWindow() reads Tauri
-// internals that only exist inside the app webview, and this module ships in
-// the same bundle as the OBS overlay route. Evaluating it in a plain browser
-// threw before React could mount, which killed the overlay's WebSocket.
-// Returns null outside the webview so a cosmetic maximise indicator cannot
-// take the whole shell down with it.
+// internals that exist only inside the app webview, and this module ships in
+// the same bundle as the OBS overlay route. Null outside the webview, so
+// window chrome cannot take the overlay down with it.
 const appWindow = () => {
   try {
     return getCurrentWindow();
@@ -22,16 +20,12 @@ const appWindow = () => {
   }
 };
 
-/**
- * Window chrome, carrying the three live facts. It used to repeat the page
- * title, which the page already prints at 26px; holding the connection state
- * instead means it is legible from every screen without being read.
- */
+/** Window chrome, carrying the three live facts instead of the page title. */
 export function TitleBar() {
   const [isMaximized, setIsMaximized] = useState(false);
   const status = useServerStatusStore((s) => s.status);
   const eventsubConnected = useServerStatusStore((s) => s.eventsubConnected);
-  // Until settings load, the long-standing behaviour: minimising hides.
+  // Until settings load, assume the default.
   const toTray = useSettingsStore((s) => s.settings?.minimizeToTray ?? true);
 
   useEffect(() => {
@@ -60,7 +54,7 @@ export function TitleBar() {
         <Stat label="Overlay" tone={clients > 0 ? "ok" : "idle"}>
           {clients === 1 ? "1 source" : `${clients} sources`}
         </Stat>
-        <Stat label="Port">{status?.wsPort ?? "—"}</Stat>
+        <Stat label="Port">{status?.wsPort ?? "-"}</Stat>
       </div>
 
       <div className="flex items-center">

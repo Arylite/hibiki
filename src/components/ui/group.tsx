@@ -3,8 +3,7 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface GroupProps {
-  /** Sits above the container, not inside it — the heading belongs to the
-   *  page, the container belongs to the content. */
+  /** Sits above the container, not inside it. */
   title?: string;
   description?: ReactNode;
   /** Trailing control on the heading line. */
@@ -13,7 +12,7 @@ interface GroupProps {
   className?: string;
 }
 
-/** A titled region of a page. The whole app is built from these. */
+/** A titled region of a page. */
 export function Group({ title, description, action, children, className }: GroupProps) {
   return (
     <section className={cn("min-w-0", className)}>
@@ -31,8 +30,7 @@ export function Group({ title, description, action, children, className }: Group
   );
 }
 
-/** The one raised surface in the design: a hairline, a radius, and the
- *  faintest lift off the canvas. Nothing else floats. */
+/** The one raised surface in the design: a hairline, a radius, a faint lift. */
 export function Panel({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <div className={cn("overflow-hidden rounded-lg border border-line bg-surface shadow-raise", className)}>
@@ -49,7 +47,7 @@ export function Rows({ children, className }: { children: ReactNode; className?:
 interface RowProps {
   label?: ReactNode;
   description?: ReactNode;
-  /** Gives the control a fixed measure — sliders and text fields want it. */
+  /** Gives the control a fixed measure - sliders and text fields want it. */
   wide?: boolean;
   /** Puts the control under the label instead of beside it. */
   block?: boolean;
@@ -57,7 +55,7 @@ interface RowProps {
   className?: string;
 }
 
-/** Label left, control right. One row, one decision. */
+/** Label left, control right. */
 export function Row({ label, description, wide, block, children, className }: RowProps) {
   if (block) {
     return (
@@ -90,7 +88,7 @@ export function Row({ label, description, wide, block, children, className }: Ro
   );
 }
 
-/** A row that goes somewhere. Whole row is the target, as it should be. */
+/** A row that goes somewhere; the whole row is the target. */
 export function RowButton({
   onClick,
   disabled,

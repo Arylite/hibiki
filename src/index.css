@@ -21,22 +21,9 @@
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-/* ─────────────────────────────────────────────────────────────────────────
-   Palette
-
-   Muted indigo, dusty rose, white. The indigo is the field and does almost
-   all of the work; the rose is spent only on what is live, selected or
-   primary. Amber and terracotta carry the two states it cannot say — needs
-   attention, and broken.
-
-   Chroma is deliberately low across the whole set. This window sits open for
-   a whole broadcast next to OBS, and a saturated field is the first thing to
-   tire the eye; the hues are the same as the brand, held quiet.
-
-   Dark is the default set. Values live here as raw variables and are
-   referenced from @theme, which is what lets the whole app follow the system
-   appearance without a single `dark:` prefix in a component.
-   ───────────────────────────────────────────────────────────────────────── */
+/* Palette. Dark is the default set; values are raw variables here and are
+   referenced from @theme, which is what lets the app follow the system
+   appearance without a `dark:` prefix in any component. */
 :root {
     /* Stated as a single value in each branch: a `dark light` pair gets
        normalised to `light dark` by the minifier, which flips what the UA

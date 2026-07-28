@@ -55,7 +55,7 @@ export function ChatPage() {
     <Page>
       <PageHeader
         title="Chat"
-        lede="Your channel's chat, read over the same connection as your alerts — watch it here, put it on stream, or both."
+        lede="Your channel's chat, read over the same connection as your alerts - watch it here, put it on stream, or both."
       />
 
       <Stack>
@@ -65,7 +65,7 @@ export function ChatPage() {
             <div className="min-w-0 flex-1">
               <p className="text-body font-medium text-ink">Chat needs one more permission</p>
               <p className="mt-0.5 text-body text-ink-2">
-                Reading chat was added after you signed in. Sign out and back in from Settings to grant it —
+                Reading chat was added after you signed in. Sign out and back in from Settings to grant it -
                 your alerts keep working either way.
               </p>
             </div>
@@ -84,7 +84,7 @@ export function ChatPage() {
               {messages.length === 0 ? (
                 <EmptyState
                   title="No messages yet"
-                  description="Chat arrives here as it is posted. Nothing is written to disk — this is a live view, not a log."
+                  description="Chat arrives here as it is posted. Nothing is written to disk - this is a live view, not a log."
                 />
               ) : (
                 <MessageFeed messages={messages} />
@@ -94,7 +94,6 @@ export function ChatPage() {
 
           <Group title="On stream">
             <StreamPreview notice={chat.enabled ? undefined : "Not shown on stream"}>
-              {/* The real ChatBox, so the preview cannot drift from it. */}
               <ChatBox
                 messages={messages.length > 0 ? messages : SAMPLE}
                 config={{ ...chat, enabled: true, fadeAfterSecs: 0 }}
@@ -102,7 +101,7 @@ export function ChatPage() {
               />
             </StreamPreview>
             <p className="mt-1 px-0.5 text-sm text-ink-3">
-              {messages.length > 0 ? "Your real chat, at stream scale." : "Sample messages — chat has been quiet."}
+              {messages.length > 0 ? "Your real chat, at stream scale." : "Sample messages - chat has been quiet."}
             </p>
           </Group>
         </div>
@@ -134,7 +133,7 @@ export function ChatPage() {
                     format={(v) => (v === 0 ? "Never" : `${v}s`)}
                   />
                 </Row>
-                <Row label="Hide commands" description="Anything starting with “!”.">
+                <Row label="Hide commands" description="Anything starting with '!'.">
                   <Switch checked={chat.hideCommands} onCheckedChange={(hideCommands) => patch({ hideCommands })} />
                 </Row>
                 <Row label="Hide bots" description="Nightbot, StreamElements, Streamlabs and friends.">
@@ -215,8 +214,7 @@ export function ChatPage() {
   );
 }
 
-/** Newest at the bottom, and it follows — a chat view that does not scroll
- *  itself is a chat view you have to babysit. */
+/** Newest at the bottom, and it follows. */
 function MessageFeed({ messages }: { messages: ChatMessage[] }) {
   const end = useRef<HTMLDivElement>(null);
 
@@ -234,7 +232,7 @@ function MessageFeed({ messages }: { messages: ChatMessage[] }) {
               <span className="font-medium" style={{ color: message.color || undefined }}>
                 {message.username}
               </span>
-              <span className="text-ink-3"> · </span>
+              <span className="text-ink-3"> - </span>
               <span className="text-ink-2">{message.text}</span>
             </p>
           </li>

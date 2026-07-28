@@ -19,8 +19,7 @@ pub fn get_settings(state: State<'_, Arc<AppState>>) -> Settings {
 #[tauri::command]
 pub fn update_settings(state: State<'_, Arc<AppState>>, app: AppHandle, settings: Settings) -> Settings {
     db::save_settings(&state.db.lock().unwrap(), &settings);
-    // Applied on the spot rather than at the next launch: the streamer is
-    // toggling it because they want to see the window in a capture now.
+    // Applied on the spot: the streamer is toggling it to see the effect now.
     apply_capture_protection(&app, settings.hide_from_capture);
     push_overlay_config(&state);
     settings
@@ -105,8 +104,7 @@ pub fn import_media(
     Ok(name)
 }
 
-/// Initial value for a freshly mounted UI - the poller only emits on change,
-/// so without this the app would show nothing until the track switches.
+/// Initial value for a freshly mounted UI: the poller only emits on change.
 #[tauri::command]
 pub async fn get_now_playing() -> Option<NowPlaying> {
     // WinRT's .get() blocks; never run it on the window's own thread.
@@ -116,8 +114,7 @@ pub async fn get_now_playing() -> Option<NowPlaying> {
         .flatten()
 }
 
-/// Play/pause, next, previous on whichever player owns the session - the same
-/// thing the keyboard's media keys do.
+/// Play/pause, next, previous on whichever player owns the session.
 #[tauri::command]
 pub async fn media_command(action: String) -> bool {
     tauri::async_runtime::spawn_blocking(move || nowplaying::control(&action))
@@ -125,8 +122,8 @@ pub async fn media_command(action: String) -> bool {
         .unwrap_or(false)
 }
 
-/// Minimising sends the window to the tray instead of the taskbar - the
-/// server keeps running, so alerts keep firing while it is hidden.
+/// Hides the window to the tray. The server keeps running, so alerts keep
+/// firing while it is hidden.
 #[tauri::command]
 pub fn hide_to_tray(app: AppHandle) {
     if let Some(window) = app.get_webview_window("main") {
@@ -134,8 +131,7 @@ pub fn hide_to_tray(app: AppHandle) {
     }
 }
 
-/// Overlays already open (OBS, browser) re-render on the next frame instead of
-/// needing a refresh after every tweak.
+/// Open overlays re-render on the next frame instead of needing a refresh.
 fn push_overlay_config(state: &AppState) {
     let conn = state.db.lock().unwrap();
     state.broadcast(
@@ -194,8 +190,8 @@ pub fn get_server_status(state: State<'_, Arc<AppState>>) -> serde_json::Value {
     })
 }
 
-/// The in-memory chat ring, oldest first. The window asks for it on open so
-/// the feed is not blank until the next person says something.
+/// The in-memory chat ring, oldest first. Asked for when the window opens, so
+/// the feed is not blank until the next person speaks.
 #[tauri::command]
 pub fn get_recent_chat(state: State<'_, Arc<AppState>>) -> Vec<ChatMessage> {
     twitch::chat::recent(&state, twitch::chat::BUFFER)

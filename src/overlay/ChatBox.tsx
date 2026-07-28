@@ -16,8 +16,7 @@ const BADGE_LABELS: Record<string, string> = {
 /** Only the badges a viewer reads at a glance; Twitch ships dozens. */
 const BADGE_ORDER = ["broadcaster", "moderator", "vip", "subscriber", "founder"];
 
-/** Twitch chat on stream. The lines OBS shows are a filtered view of the same
- *  feed the app window holds — the app is the monitor, this is the broadcast. */
+/** Twitch chat on stream: a filtered view of the feed the app window holds. */
 export function ChatBox({
   messages,
   config,

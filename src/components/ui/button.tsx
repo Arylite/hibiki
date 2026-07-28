@@ -3,10 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
-/**
- * Four intents, three heights. A button changes colour under the cursor rather
- * than moving: nothing in this interface bounces.
- */
+/** Four intents, three heights. */
 const buttonVariants = cva(
   [
     "inline-flex shrink-0 items-center justify-center gap-1.5 rounded-md font-medium whitespace-nowrap",

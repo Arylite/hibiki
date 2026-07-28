@@ -107,7 +107,7 @@ pub struct ChatMessage {
     /// The colour the chatter picked on Twitch. Empty when they never set one.
     pub color: String,
     pub text: String,
-    /// Badge set ids: `broadcaster`, `moderator`, `subscriber`, `vip`…
+    /// Badge set ids: `broadcaster`, `moderator`, `subscriber`, `vip`...
     pub badges: Vec<String>,
     pub created_at: i64,
 }
@@ -140,7 +140,7 @@ pub struct ChatWidget {
     // Feed
     /// How many lines stay on screen.
     pub max_messages: u32,
-    /// Drop `!commands` — they are for the bot, not the viewers.
+    /// Drop `!commands` - they are for the bot, not the viewers.
     pub hide_commands: bool,
     /// Drop the usual chat bots.
     pub hide_bots: bool,
@@ -185,9 +185,8 @@ impl Default for ChatWidget {
     }
 }
 
-/// How on-stream text is kept readable over arbitrary gameplay. `Auto` is the
-/// long-standing behaviour: a soft shadow only while the widget is
-/// transparent, dropped once the streamer gives it a backdrop of its own.
+/// How on-stream text is kept readable over gameplay. `Auto` means a soft
+/// shadow while the widget is transparent, none once it has a backdrop.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Default)]
 #[serde(rename_all = "kebab-case")]
 pub enum TextShadow {
@@ -199,7 +198,7 @@ pub enum TextShadow {
     Outline,
 }
 
-/// `Auto` follows the layout — centred when the image sits above or below,
+/// `Auto` follows the layout - centred when the image sits above or below,
 /// ranged left when it sits beside the text.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Default)]
 #[serde(rename_all = "kebab-case")]
@@ -253,7 +252,7 @@ pub struct GoalWidget {
     pub text_shadow: TextShadow,
 
     // Bar
-    /// 0 derives the height from the font size, as it always did.
+    /// 0 derives the height from the font size.
     pub bar_height: u32,
     pub bar_radius: u32,
     pub track_color: String,
@@ -295,8 +294,8 @@ impl Default for GoalWidget {
     }
 }
 
-/// The on-stream music widget. Off by default - nothing lands on someone's
-/// broadcast because they installed an update.
+/// The on-stream music widget. Off by default: nothing lands on a broadcast
+/// because someone installed an update.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", default)]
 pub struct NowPlayingWidget {
@@ -387,8 +386,8 @@ pub enum AlertAnimation {
     Drop,
 }
 
-/// The shared prefix is the point: these name where the image goes, and
-/// `Top`/`Left` on their own would not say what is being placed.
+/// The shared prefix is the point: `Top`/`Left` alone would not say what is
+/// being placed.
 #[allow(clippy::enum_variant_names)]
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Default)]
 #[serde(rename_all = "kebab-case")]

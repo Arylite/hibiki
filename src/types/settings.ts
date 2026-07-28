@@ -15,9 +15,8 @@ export const AlertPositionSchema = z.enum([
 ]);
 export type AlertPosition = z.infer<typeof AlertPositionSchema>;
 
-/** How on-stream text stays readable over arbitrary gameplay. `auto` is the
- *  long-standing behaviour: a shadow while transparent, none once the widget
- *  has a backdrop of its own. */
+/** How on-stream text stays readable over gameplay. `auto` means a shadow
+ *  while transparent, none once the widget has a backdrop. */
 export const TextShadowSchema = z.enum(["auto", "none", "soft", "strong", "outline"]);
 export type TextShadow = z.infer<typeof TextShadowSchema>;
 
@@ -79,7 +78,7 @@ export const GoalWidgetSchema = z.object({
   textColor: z.string(),
   background: z.string(),
   fontSize: z.number().int(),
-  /** Counting starts here, so “reset” is a timestamp, not a delete. */
+  /** Counting starts here, so "reset" is a timestamp, not a delete. */
   startedAt: z.number(),
   ...FrameFields,
   /** 0 keeps the responsive default width. */
@@ -161,7 +160,7 @@ export const AlertStyleSchema = z.object({
   fontSize: z.number().int(),
   /** Ignore repeats of this alert for N ms. 0 disables it. */
   cooldownMs: z.number().int(),
-  /** Skip events worth less than this — bits, viewers, gifted subs. */
+  /** Skip events worth less than this - bits, viewers, gifted subs. */
   minAmount: z.number().int(),
   ...FrameFields,
   textAlign: TextAlignSchema,

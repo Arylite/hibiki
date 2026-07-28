@@ -83,8 +83,6 @@ function TwitchSection() {
         </Rows>
       </Group>
 
-      {/* This was a collapsed disclosure, which hid the one genuinely hard step
-          in the whole product — and the redirect URI had to be retyped. */}
       <Group title="Setting up the Twitch application" description="Three steps, once.">
         <Panel className="p-4">
           <ol className="flex flex-col gap-3.5">
@@ -99,7 +97,7 @@ function TwitchSection() {
                 dev.twitch.tv/console/apps
                 <ExternalLink className="size-3" />
               </a>{" "}
-              with OAuth Client Type “Public”.
+              with OAuth Client Type "Public".
             </Step>
             <Step n={2}>
               <span className="flex flex-wrap items-center gap-1.5">
@@ -107,7 +105,7 @@ function TwitchSection() {
                 <code className="num rounded-sm bg-fill px-1.5 py-0.5 text-sm text-ink">{redirectUri}</code>
                 <CopyButton value={redirectUri} />
               </span>
-              <span className="mt-1 block text-ink-3">Twitch rejects 127.0.0.1 — it has to be localhost.</span>
+              <span className="mt-1 block text-ink-3">Twitch rejects 127.0.0.1 - it has to be localhost.</span>
             </Step>
             <Step n={3}>Paste the application's Client ID into the field above.</Step>
           </ol>
@@ -170,8 +168,7 @@ function PlaybackSection() {
   );
 }
 
-/** A look is work, and work that only exists in one sqlite file is work you
- *  can lose. This is the backup, and the way to hand a look to someone else. */
+/** Backup and restore for a look, and the way to hand one to someone else. */
 function StylesSection() {
   const settings = useSettingsStore((s) => s.settings);
   const update = useSettingsStore((s) => s.update);
@@ -243,9 +240,8 @@ function StylesSection() {
   );
 }
 
-/** Hibiki ships signed builds from GitHub releases. The check runs once at
- *  startup; installing is always a button somebody pressed, because the app
- *  restarts into the new copy and a restart mid-stream is not our call. */
+/** Installing is always a button somebody pressed: it restarts the app, and a
+ *  restart mid-stream is not ours to decide. */
 function UpdatesSection() {
   const [version, setVersion] = useState("");
   const [update, setUpdate] = useState<Update | null>(null);
@@ -284,7 +280,7 @@ function UpdatesSection() {
     <Group title="Updates">
       <Rows>
         <Row
-          label={update ? `Version ${version} — ${update.version} is out` : `Version ${version}`}
+          label={update ? `Version ${version} - ${update.version} is out` : `Version ${version}`}
           description={
             update
               ? "Installs over this copy and restarts. Your settings, media and sign-in stay."
@@ -294,11 +290,11 @@ function UpdatesSection() {
           {update ? (
             <Button variant="primary" onClick={install} disabled={busy !== null}>
               <Download />
-              {busy === "installing" ? "Installing…" : `Install ${update.version}`}
+              {busy === "installing" ? "Installing..." : `Install ${update.version}`}
             </Button>
           ) : (
             <Button onClick={look} disabled={busy !== null}>
-              {busy === "checking" ? "Checking…" : "Check for updates"}
+              {busy === "checking" ? "Checking..." : "Check for updates"}
             </Button>
           )}
         </Row>
@@ -318,8 +314,8 @@ function AdvancedSection() {
     if (settings) setWsPort(String(settings.wsPort));
   }, [settings?.wsPort]);
 
-  // An invalid port used to roll back silently, which read as the field
-  // ignoring you. Now it says why.
+  // An invalid port rolls back, but says why: a field that silently ignores
+  // you reads as broken.
   const commitPort = () => {
     const port = Number(wsPort);
     if (Number.isInteger(port) && port > 0 && port <= 65535) {
@@ -348,7 +344,7 @@ function AdvancedSection() {
 
         <Row
           label="Hide from screen capture"
-          description="Keeps this window out of OBS display capture, screen shares and the Game Bar. Turn it off to show Hibiki on stream — your Twitch account details are on screen here."
+          description="Keeps this window out of OBS display capture, screen shares and the Game Bar. Turn it off to show Hibiki on stream - your Twitch account details are on screen here."
         >
           <Switch
             checked={settings.hideFromCapture}
@@ -384,8 +380,7 @@ function AdvancedSection() {
   );
 }
 
-/** Settings save on blur. The indicator used to be a silent line beside the
- *  tab list; it is a toast now, and it is announced. */
+/** Settings save on blur, and the save is announced rather than only shown. */
 function SaveAnnouncer() {
   const saving = useSettingsStore((s) => s.saving);
   const wasSaving = useRef(false);

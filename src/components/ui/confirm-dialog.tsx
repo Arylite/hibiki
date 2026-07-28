@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 
 interface ConfirmDialogProps {
-  /** The control that opens it — rendered as the trigger. */
+  /** The control that opens it - rendered as the trigger. */
   trigger: ReactNode;
   title: string;
   description: string;
@@ -13,10 +13,8 @@ interface ConfirmDialogProps {
   onConfirm: () => void;
 }
 
-/**
- * Irreversible actions get a gate. Built on AlertDialog, so focus trapping,
- * Esc and focus restoration are the primitive's problem rather than ours.
- */
+/** Irreversible actions get a gate. On AlertDialog, so focus trapping, Esc and
+ *  focus restoration are the primitive's problem. */
 export function ConfirmDialog({ trigger, title, description, confirmLabel, onConfirm }: ConfirmDialogProps) {
   return (
     <AlertDialog.Root>

@@ -118,10 +118,9 @@ fn resolve_dist_dir(app: &AppHandle) -> PathBuf {
     PathBuf::from("../dist")
 }
 
-/// Public, non-secret subset of settings the externally-loaded overlay page
-/// needs (it has no Tauri IPC access since OBS loads it as a plain browser
-/// source, not a Tauri webview). Also pushed over the WebSocket on every edit
-/// so an open overlay restyles itself live.
+/// The non-secret subset of settings the overlay page needs. OBS loads that
+/// page as a plain browser source with no Tauri IPC, so it arrives over HTTP,
+/// and again over the WebSocket on every edit.
 pub fn overlay_config(settings: &Settings, styles: &AlertStyles) -> serde_json::Value {
     serde_json::json!({
         "globalVolume": settings.global_volume,

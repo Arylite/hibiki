@@ -1,10 +1,7 @@
 import type { StatusTone } from "@/components/ui/status-dot";
 
-/**
- * The single question the app has to answer: is Hibiki working right now?
- * Ordered by what blocks what - you cannot receive events without an
- * account, and events with nowhere to render are still a problem.
- */
+/** Ordered by what blocks what: no events without an account, and events with
+ *  nowhere to render are still a problem. */
 export type ConnectionState = "unconfigured" | "signed-out" | "connecting" | "no-overlay" | "running";
 
 export function connectionState(input: {

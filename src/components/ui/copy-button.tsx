@@ -11,7 +11,7 @@ interface CopyButtonProps {
   size?: "sm" | "md";
 }
 
-/** Confirms in place. A copy is too small a thing to spend a toast on. */
+/** Confirms in place rather than spending a toast on it. */
 export function CopyButton({ value, label, variant = "ghost", size = "sm" }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
 

@@ -6,16 +6,13 @@ import { SliderRow } from "@/components/ui/slider";
 import { FONT_WEIGHTS, OVERLAY_FONTS } from "@/lib/overlay-style";
 import type { TextShadow } from "@/types/settings";
 
-/**
- * Alerts, the music strip and the goal bar are three different widgets that
- * are, on stream, the same kind of object: a box of text over gameplay. These
- * two groups are the controls they share, defined once.
- */
+/** On stream, alerts and the three widgets are the same kind of object: a box
+ *  of text over gameplay. These are the controls they share. */
 
 const DEFAULT_BORDER = "#FFFFFF";
 
 export interface FrameFields {
-  /** Read, never written here — it decides whether the widget is a box. */
+  /** Read, never written here - it decides whether the widget is a box. */
   background: string;
   backgroundOpacity: number;
   cornerRadius: number;

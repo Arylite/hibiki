@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-/** A state, said quietly: on/off, live/idle, the kind of an event. */
+/** A state: on/off, live/idle, the kind of an event. */
 const badgeVariants = cva(
   "inline-flex h-5 shrink-0 items-center gap-1 rounded-full px-2 text-xs font-medium whitespace-nowrap transition-colors duration-100",
   {

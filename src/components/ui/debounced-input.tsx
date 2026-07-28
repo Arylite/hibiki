@@ -9,8 +9,7 @@ interface DebouncedInputProps {
   placeholder?: string;
 }
 
-/** Typing in a text field should not write to sqlite on every keystroke, so it
- *  commits on blur or Enter. There were two identical copies of this. */
+/** Commits on blur or Enter, so typing does not write to sqlite per keystroke. */
 export const DebouncedInput = forwardRef<HTMLInputElement, DebouncedInputProps>(
   ({ value, onCommit, className, placeholder }, ref) => {
     const [draft, setDraft] = useState(value);

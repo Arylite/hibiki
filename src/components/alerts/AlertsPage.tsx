@@ -20,8 +20,8 @@ export function AlertsPage() {
   return (
     <div className="flex h-full">
       <AlertRail styles={styles} selected={selected} onSelect={setSelected} />
-      {/* Its own container, so the settings columns measure against this pane
-          rather than the shell — the rail would skew the count. */}
+      {/* Its own container: the settings columns measure against this pane, not
+          the shell, which the rail would skew. */}
       <div className="@container min-w-0 flex-1 overflow-y-auto">
         <AlertDetail kind={selected} style={styles[selected]} />
       </div>
@@ -29,7 +29,7 @@ export function AlertsPage() {
   );
 }
 
-/** Five events, their state, and whatever image the streamer chose for each. */
+/** Every event, its state, and whatever image the streamer chose for it. */
 function AlertRail({
   styles,
   selected,

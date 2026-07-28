@@ -42,9 +42,8 @@ pub fn run() {
             let port = settings.ws_port;
             let has_credentials = db::load_credentials(&conn).is_some();
 
-            // The window shows Twitch credentials and stream config, so it
-            // stays out of screen captures by default. Some streamers do want
-            // to show it on stream, which is what the setting is for.
+            // The window shows Twitch credentials, so it stays out of screen
+            // captures by default.
             commands::apply_capture_protection(app.handle(), settings.hide_from_capture);
 
             let state = Arc::new(AppState::new(conn, media_dir));
@@ -57,8 +56,8 @@ pub fn run() {
                 twitch::eventsub::spawn(state.clone(), app_handle.clone());
             }
 
-            // Minimising hides the window, so the tray is the only way back -
-            // but a missing icon must not take the whole app down with it.
+            // The tray is the only way back from a hidden window, but a missing
+            // icon must not take the whole app down with it.
             let Some(icon) = app.default_window_icon().cloned() else {
                 eprintln!("warning: no window icon available, skipping tray icon");
                 return Ok(());

@@ -42,12 +42,11 @@ export function AppShell() {
     refreshStatus();
     loadNowPlaying();
 
-    // Once, quietly, and never installed behind anyone's back: a newer release
-    // is worth a line, and being offline is not worth an error while someone
-    // is going live.
+    // Never installed behind anyone's back, and never an error: being offline
+    // is not worth a toast while someone is going live.
     check()
       .then((update) => {
-        if (update) toast.ok(`Hibiki ${update.version} is out`, "Settings → Updates installs it.");
+        if (update) toast.ok(`Hibiki ${update.version} is out`, "Settings > Updates installs it.");
       })
       .catch(() => {});
 
@@ -57,7 +56,7 @@ export function AppShell() {
     listen<boolean>("eventsub-status", (e) => setEventsubConnected(e.payload)).then((fn) => unlisten.push(fn));
     listen<NowPlaying | null>("now-playing", (e) => setNowPlaying(e.payload)).then((fn) => unlisten.push(fn));
     // Chat lands in the window whichever page is open, so opening Chat mid
-    // conversation shows what was said rather than starting from silence.
+    // conversation shows what was said.
     listen<ChatMessage>("chat", (e) => pushChat(e.payload)).then((fn) => unlisten.push(fn));
 
     const interval = setInterval(refreshStatus, STATUS_POLL_MS);
@@ -84,8 +83,8 @@ export function AppShell() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <TitleBar />
-        {/* Every page's responsive maths is measured here, not on the viewport,
-            because the sidebar takes a fixed slice of it. */}
+        {/* Every page's container queries measure against this, not the
+            viewport: the sidebar takes a fixed slice of it. */}
         <main className="@container relative min-h-0 flex-1 overflow-hidden">
           <Outlet />
         </main>

@@ -8,7 +8,7 @@ export const ChatMessageSchema = z.object({
   /** The colour the chatter picked on Twitch. Empty when they never set one. */
   color: z.string(),
   text: z.string(),
-  /** Badge set ids: `broadcaster`, `moderator`, `subscriber`, `vip`… */
+  /** Badge set ids: `broadcaster`, `moderator`, `subscriber`, `vip`... */
   badges: z.array(z.string()),
   createdAt: z.number(),
 });
@@ -26,12 +26,8 @@ export const isBot = (username: string) => BOTS.includes(username.toLowerCase())
 
 export const isCommand = (text: string) => text.startsWith("!");
 
-/**
- * What the overlay actually shows. The app window holds the whole feed — it is
- * the monitor — and this decides which of it is worth stream space. Filtering
- * happens before the cut, so hiding bots buys back lines rather than leaving
- * gaps where they were.
- */
+/** What the overlay shows of the feed. Filtering happens before the cut, so
+ *  hiding bots buys back lines rather than leaving gaps where they were. */
 export function visibleMessages(messages: ChatMessage[], config: ChatWidget): ChatMessage[] {
   return messages
     .filter((message) => !(config.hideCommands && isCommand(message.text)))

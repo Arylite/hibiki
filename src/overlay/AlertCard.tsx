@@ -23,8 +23,7 @@ const DIRECTION: Record<AlertLayout, string> = {
 
 const STACKED: AlertLayout[] = ["image-top", "image-bottom"];
 
-/** The graphic OBS composites over the stream. Every visual decision here is
- *  the streamer's, not ours — we only lay it out. */
+/** The graphic OBS composites over the stream. */
 export function AlertCard({ alert, style }: { alert: AlertPayload; style: AlertStyle }) {
   const message = renderTemplate(style.message, alert);
   const transparent = isTransparent(style.background);

@@ -4,8 +4,8 @@ use std::path::Path;
 use crate::alerts::AlertStyles;
 use crate::models::{Alert, AlertConfig, AlertKind, GoalKind, Settings, TwitchCredentials};
 
-/// Alerts older than this fall off the end - the history is a stream log, not
-/// an archive, and it has to stay cheap to query on every dashboard poll.
+/// Alerts older than this fall off the end: a stream log, not an archive, and
+/// it stays cheap to query on every dashboard poll.
 const HISTORY_CAP: i64 = 500;
 
 pub fn init(path: &Path) -> Connection {

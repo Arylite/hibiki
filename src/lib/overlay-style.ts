@@ -2,14 +2,8 @@ import type { CSSProperties } from "react";
 
 import type { AlertPosition, TextShadow } from "@/types/settings";
 
-/**
- * Shared look for the three on-stream widgets. Every value here is the
- * streamer's decision, so this module only turns their choices into CSS —
- * it never decides anything itself.
- */
-
-/** Inter and Geist Mono ship with the overlay; the rest are faces every
- *  Windows install running OBS already has. */
+/** Inter and Geist Mono ship with the overlay; the rest are on every Windows
+ *  install running OBS. */
 export const OVERLAY_FONTS = [
   { value: "inter", label: "Inter", stack: "'Inter', system-ui, sans-serif" },
   { value: "system", label: "System", stack: "system-ui, 'Segoe UI', sans-serif" },
@@ -34,8 +28,7 @@ const OUTLINE = [-1, 1]
   .flatMap((x) => [-1, 1].map((y) => `${x}px ${y}px 0 rgba(0,0,0,0.95)`))
   .join(", ");
 
-/** `auto` is the behaviour the overlay always had: readable over gameplay
- *  while transparent, clean once the widget carries its own backdrop. */
+/** `auto` shadows the text only while the widget is transparent. */
 export function textShadow(mode: TextShadow, transparent: boolean): string | undefined {
   const resolved = mode === "auto" ? (transparent ? "soft" : "none") : mode;
   switch (resolved) {
@@ -50,23 +43,16 @@ export function textShadow(mode: TextShadow, transparent: boolean): string | und
   }
 }
 
-/**
- * A picked colour, dimmed by an alpha byte: `#22c55e` at 60% becomes
- * `#22c55e99`. Anything the colour input did not produce — `transparent`, an
- * rgba() string — is handed back untouched.
- */
+/** Dims a picked colour with an alpha byte: `#22c55e` at 60% is `#22c55e99`.
+ *  Anything else (`transparent`, rgba()) is handed back untouched. */
 export function withOpacity(color: string, opacity: number): string {
   if (opacity >= 100 || !/^#[0-9a-f]{6}$/i.test(color)) return color;
   const alpha = Math.round((Math.max(0, opacity) / 100) * 255);
   return color + alpha.toString(16).padStart(2, "0");
 }
 
-/**
- * Where a widget sits on the stream. The inset is inline rather than a class
- * because it follows the streamer's overlay padding; centring uses the
- * standalone `translate` property so it survives the entrance animations,
- * which own `transform`.
- */
+/** Where a widget sits on the stream. Centring uses the standalone `translate`
+ *  property, not a transform: the entrance animations own `transform`. */
 export function positionStyle(position: AlertPosition, pad: number): CSSProperties {
   const [vertical, horizontal] = position === "center" ? ["center", "center"] : position.split("-");
   return {
@@ -90,11 +76,8 @@ interface FrameConfig {
   fontWeight: number;
 }
 
-/**
- * The box itself. Padding and radius only apply once the widget has something
- * to be a box of — a backdrop or a border — so a transparent widget still
- * sits flush on the stream the way it always did.
- */
+/** Padding and radius only apply once the widget has a backdrop or a border,
+ *  so a transparent one sits flush on the stream. */
 export function frameStyle(config: FrameConfig): CSSProperties {
   const transparent = config.background === "transparent";
   const bordered = config.borderWidth > 0 && config.borderColor !== "transparent";
@@ -105,7 +88,7 @@ export function frameStyle(config: FrameConfig): CSSProperties {
     color: config.textColor,
     border: bordered ? `${config.borderWidth}px solid ${config.borderColor}` : undefined,
     borderRadius: boxed ? config.cornerRadius : undefined,
-    // 1.25 keeps the classic 32/40 proportion at every size.
+    // 1.25 holds the 32/40 vertical-to-horizontal proportion at every size.
     padding: boxed ? `${config.padding}px ${Math.round(config.padding * 1.25)}px` : undefined,
     fontFamily: fontStack(config.fontFamily),
     fontWeight: config.fontWeight,

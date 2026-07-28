@@ -11,12 +11,8 @@ const MIN_MS = 1100;
 const MAX_MS = 3000;
 const EASE_OUT = [0.22, 0.61, 0.36, 1] as const;
 
-/**
- * Cold-start ident. Same canvas, type and accent as the app it opens into, so
- * it resolves into the shell instead of cutting to it. Mounted by the app
- * shell only — the OBS overlay route never sees it, or the team name would
- * land on stream.
- */
+/** Cold-start ident. Mounted by the app shell only: the OBS overlay route must
+ *  never see it, or the team name lands on stream. */
 export function BootSplash() {
   const loaded = useSettingsStore((s) => s.settings !== null);
   const [minElapsed, setMinElapsed] = useState(false);
@@ -32,8 +28,7 @@ export function BootSplash() {
     };
   }, []);
 
-  // It covers the first data load, so it earns its time instead of just
-  // burning it: the app is ready underneath when it lifts.
+  // Covers the first data load, so the app is ready underneath when it lifts.
   const done = (minElapsed && loaded) || expired;
 
   return (

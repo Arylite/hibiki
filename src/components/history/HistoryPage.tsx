@@ -59,8 +59,7 @@ export function HistoryPage() {
         lede="Every event Hibiki received, including the ones your overlay never showed."
       />
 
-      {/* Sticky, because filtering a log you have scrolled into is the whole
-          point of having filters. */}
+      {/* Sticky: the filters have to stay reachable once the log is scrolled. */}
       <div className="sticky top-0 z-10 -mx-8 mb-5 border-b border-line bg-canvas px-8 pb-3">
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative w-60">
@@ -83,7 +82,6 @@ export function HistoryPage() {
           </div>
 
           <div className="ml-auto">
-            {/* Irreversible, and it used to fire on a single click. */}
             <ConfirmDialog
               trigger={
                 <Button variant="danger" disabled={alerts.length === 0}>
@@ -105,7 +103,7 @@ export function HistoryPage() {
           alerts.length === 0 ? (
             <EmptyState
               title="No events recorded yet"
-              description="Follows, subs, raids and cheers are logged here as they arrive — even the ones your overlay never showed."
+              description="Follows, subs, raids and cheers are logged here as they arrive - even the ones your overlay never showed."
             />
           ) : (
             <EmptyState
@@ -129,7 +127,7 @@ export function HistoryPage() {
       </Rows>
 
       <p className="num mt-3 px-0.5 text-sm text-ink-3">
-        {filtered.length} of {alerts.length} events · last {HISTORY_LIMIT} kept
+        {filtered.length} of {alerts.length} events - last {HISTORY_LIMIT} kept
       </p>
     </Page>
   );

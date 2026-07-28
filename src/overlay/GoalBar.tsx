@@ -4,8 +4,7 @@ import { frameStyle, isTransparent, positionStyle, textShadow } from "@/lib/over
 import { cn } from "@/lib/utils";
 import type { GoalState, GoalWidget } from "@/types/settings";
 
-/** Progress towards a stream goal. The bar animates to its new width so the
- *  movement itself reads as "someone just did that". */
+/** Progress towards a stream goal. */
 export function GoalBar({ config, state, pad }: { config: GoalWidget; state: GoalState; pad: number }) {
   if (!config.enabled) return null;
 
@@ -39,7 +38,7 @@ export function GoalBar({ config, state, pad }: { config: GoalWidget; state: Goa
             style={{ fontSize: config.fontSize * 0.85, textShadow: shadow }}
           >
             {config.showValue && `${state.current}/${target}`}
-            {config.showValue && config.showPercent && " · "}
+            {config.showValue && config.showPercent && " - "}
             {config.showPercent && `${Math.round(ratio * 100)}%`}
           </span>
         )}

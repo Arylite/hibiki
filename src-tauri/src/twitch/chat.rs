@@ -29,7 +29,7 @@ pub fn condition(broadcaster_id: &str) -> Value {
 }
 
 /// Takes what the overlay needs off an EventSub `channel.chat.message` event.
-/// Fragments (emotes, cheermotes, mentions) collapse to their text — the
+/// Fragments (emotes, cheermotes, mentions) collapse to their text - the
 /// overlay renders words, not images.
 pub fn parse(event: &Value) -> Option<ChatMessage> {
     let text = event["message"]["text"].as_str()?.trim().to_string();
@@ -64,10 +64,9 @@ pub fn parse(event: &Value) -> Option<ChatMessage> {
     })
 }
 
-/// Rings the message into the buffer, then hands it to both consumers: the
-/// app window and every connected overlay. Nothing is filtered here — which
-/// lines reach the stream is the widget's decision, and the app's own chat
-/// view is meant to show everything.
+/// Rings the message into the buffer, then hands it to the app window and
+/// every connected overlay. Nothing is filtered here: which lines reach the
+/// stream is the widget's decision.
 pub fn dispatch(state: &AppState, app: &AppHandle, message: ChatMessage) {
     {
         let mut buffer = state.chat.lock().unwrap();

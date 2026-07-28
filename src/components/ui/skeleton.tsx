@@ -5,8 +5,7 @@ export function Skeleton({ className }: { className?: string }) {
   return <div className={cn("animate-pulse rounded-md bg-fill", className)} aria-hidden />;
 }
 
-/** Page-level placeholder. Five pages used to return nothing and flash blank;
- *  this holds the shape of what is coming. */
+/** Page-level placeholder, so a page waiting on data holds its shape. */
 export function LoadingPane({ label = "Loading" }: { label?: string }) {
   return (
     <div className="mx-auto w-full max-w-[1040px] px-8 py-7" aria-busy="true" aria-live="polite">

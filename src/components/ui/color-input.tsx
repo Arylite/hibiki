@@ -1,8 +1,7 @@
 import { cn } from "@/lib/utils";
 
-/** The native picker — no dependency, and it already knows the platform's
- *  conventions. The hex sits next to it, because matching an overlay to a
- *  brand colour means reading the value, not just seeing it. */
+/** The native picker, with the hex beside it: matching a brand colour means
+ *  reading the value, not just seeing it. */
 export function ColorInput({
   value,
   onChange,

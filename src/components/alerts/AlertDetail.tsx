@@ -72,7 +72,6 @@ export function AlertDetail({ kind, style }: { kind: AlertKind; style: AlertStyl
         </div>
         <div className="flex shrink-0 items-center gap-3 pt-1.5">
           <CopyStyleDialog source={kind} style={style} />
-          {/* The one control that decides whether any of the rest matters. */}
           <label className="flex items-center gap-2.5">
             <span className="text-body text-ink-2">
               {style.enabled ? "Shown on stream" : "Hidden from stream"}
@@ -82,8 +81,6 @@ export function AlertDetail({ kind, style }: { kind: AlertKind; style: AlertStyl
         </div>
       </header>
 
-      {/* The feedback loop the page never had: editing an alert used to mean
-          firing a test into OBS to see the result. */}
       <AlertLivePreview kind={kind} style={style} />
 
       <Masonry className="mt-8">
@@ -315,8 +312,7 @@ export function AlertDetail({ kind, style }: { kind: AlertKind; style: AlertStyl
   );
 }
 
-/** The real AlertCard against a sample payload, so what you are editing and
- *  what goes on stream cannot drift apart. */
+/** The real AlertCard against a sample payload. */
 function AlertLivePreview({ kind, style }: { kind: AlertKind; style: AlertStyle }) {
   const [testing, setTesting] = useState(false);
   // Bumping the key remounts the card, which replays its entrance animation.
@@ -358,9 +354,8 @@ function AlertLivePreview({ kind, style }: { kind: AlertKind; style: AlertStyle 
   );
 }
 
-/** The message field, with the template tokens as buttons that insert at the
- *  caret. They were static chips before, so the syntax had to be typed by hand
- *  and a typo only showed up on stream. */
+/** The message field. The template tokens insert at the caret, so the syntax
+ *  never has to be typed by hand. */
 function TokenInput({ value, onCommit }: { value: string; onCommit: (value: string) => void }) {
   const input = useRef<HTMLInputElement>(null);
   const [draft, setDraft] = useState(value);

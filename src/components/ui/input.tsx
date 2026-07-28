@@ -10,8 +10,7 @@ interface InputProps extends React.ComponentProps<"input"> {
   invalid?: boolean;
 }
 
-/** The border stays put on focus — the ring comes from the global focus rule,
- *  so nothing shifts under the eye at the moment you start typing. */
+/** The border stays put on focus; the ring comes from the global focus rule. */
 function Input({ className, type, mono, invalid, ...props }: InputProps) {
   return (
     <InputPrimitive
