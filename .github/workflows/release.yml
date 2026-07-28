@@ -82,16 +82,24 @@ jobs:
           pnpm build
           cargo test --manifest-path src-tauri/Cargo.toml -- --skip nowplaying::
 
+      # The signing key is what installed copies check an update against: no
+      # key, no updater artifacts, and the bundler stops rather than shipping
+      # something nobody can verify.
       - name: Build the installers and publish
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: ${{ steps.release.outputs.tag }}
           releaseName: ${{ steps.release.outputs.name }}
           releaseBody: ${{ steps.release.outputs.body }}
           releaseDraft: false
           prerelease: ${{ steps.release.outputs.prerelease }}
+          # Both bundles are built; the setup.exe is the one that can install
+          # over a running copy without prompting for elevation twice.
+          updaterJsonPreferNsis: true
 
       # Every push to main leaves a prerelease behind, so keep the newest few
       # and let the rest go. Tagged releases are never touched.

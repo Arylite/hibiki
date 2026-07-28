@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { getVersion } from "@tauri-apps/api/app";
-import { openUrl } from "@tauri-apps/plugin-opener";
+import { relaunch } from "@tauri-apps/plugin-process";
+import { check, type Update } from "@tauri-apps/plugin-updater";
 import { Download, ExternalLink, Upload } from "lucide-react";
 
 import { Page, PageHeader, Stack } from "@/components/layout/Page";
@@ -13,7 +14,6 @@ import { SliderRow } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/toast";
 import { downloadStyleFile, readStyleFile } from "@/lib/style-file";
-import { checkForUpdate, type UpdateInfo } from "@/lib/update";
 import { useAlertStyleStore } from "@/stores/alertStyleStore";
 import { useAuthStore } from "@/stores/authStore";
 import { useServerStatusStore } from "@/stores/serverStatusStore";
@@ -243,27 +243,40 @@ function StylesSection() {
   );
 }
 
-/** Hibiki ships from GitHub releases, so that is where it looks. The check
- *  also runs once at startup; this is the row that says what it found. */
+/** Hibiki ships signed builds from GitHub releases. The check runs once at
+ *  startup; installing is always a button somebody pressed, because the app
+ *  restarts into the new copy and a restart mid-stream is not our call. */
 function UpdatesSection() {
   const [version, setVersion] = useState("");
-  const [update, setUpdate] = useState<UpdateInfo | null>(null);
-  const [checking, setChecking] = useState(false);
+  const [update, setUpdate] = useState<Update | null>(null);
+  const [busy, setBusy] = useState<"checking" | "installing" | null>(null);
 
   useEffect(() => {
     getVersion().then(setVersion);
   }, []);
 
-  const check = async () => {
-    setChecking(true);
+  const look = async () => {
+    setBusy("checking");
     try {
-      const found = await checkForUpdate();
+      const found = await check();
       setUpdate(found);
       if (!found) toast.ok("Hibiki is up to date");
     } catch (err) {
-      toast.error("Could not reach GitHub", String(err));
+      toast.error("Could not check for updates", String(err));
     } finally {
-      setChecking(false);
+      setBusy(null);
+    }
+  };
+
+  const install = async () => {
+    if (!update) return;
+    setBusy("installing");
+    try {
+      await update.downloadAndInstall();
+      await relaunch();
+    } catch (err) {
+      toast.error("Could not install the update", String(err));
+      setBusy(null);
     }
   };
 
@@ -271,21 +284,21 @@ function UpdatesSection() {
     <Group title="Updates">
       <Rows>
         <Row
-          label={update ? `Version ${version} — ${update.latest} is out` : `Version ${version}`}
+          label={update ? `Version ${version} — ${update.version} is out` : `Version ${version}`}
           description={
             update
-              ? "The installer is on the release page. Run it over this one; your settings stay."
+              ? "Installs over this copy and restarts. Your settings, media and sign-in stay."
               : "Checked against the releases page when Hibiki starts."
           }
         >
           {update ? (
-            <Button variant="primary" onClick={() => openUrl(update.url)}>
+            <Button variant="primary" onClick={install} disabled={busy !== null}>
               <Download />
-              Get {update.latest}
+              {busy === "installing" ? "Installing…" : `Install ${update.version}`}
             </Button>
           ) : (
-            <Button onClick={check} disabled={checking}>
-              {checking ? "Checking…" : "Check for updates"}
+            <Button onClick={look} disabled={busy !== null}>
+              {busy === "checking" ? "Checking…" : "Check for updates"}
             </Button>
           )}
         </Row>

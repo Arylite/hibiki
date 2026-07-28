@@ -48,7 +48,6 @@ jobs:
         run: |
           node --experimental-strip-types src/lib/time.check.ts
           node --experimental-strip-types src/lib/overlay-style.check.ts
-          node --experimental-strip-types src/lib/update.check.ts
           node --experimental-strip-types src/types/chat.check.ts
 
   rust:

@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { listen } from "@tauri-apps/api/event";
+import { check } from "@tauri-apps/plugin-updater";
 import { Outlet } from "react-router-dom";
 
 import { BootSplash } from "@/components/layout/BootSplash";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { TitleBar } from "@/components/layout/TitleBar";
 import { toast, Toaster } from "@/components/ui/toast";
-import { checkForUpdate } from "@/lib/update";
 import { useAlertHistoryStore } from "@/stores/alertHistoryStore";
 import { useAlertStyleStore } from "@/stores/alertStyleStore";
 import { useChatStore } from "@/stores/chatStore";
@@ -42,11 +42,12 @@ export function AppShell() {
     refreshStatus();
     loadNowPlaying();
 
-    // Once, quietly: a newer release is worth a line, and being offline is
-    // not worth an error while someone is going live.
-    checkForUpdate()
+    // Once, quietly, and never installed behind anyone's back: a newer release
+    // is worth a line, and being offline is not worth an error while someone
+    // is going live.
+    check()
       .then((update) => {
-        if (update) toast.ok(`Hibiki ${update.latest} is out`, "Settings → Updates has the download.");
+        if (update) toast.ok(`Hibiki ${update.version} is out`, "Settings → Updates installs it.");
       })
       .catch(() => {});
 
