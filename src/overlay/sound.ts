@@ -1,3 +1,4 @@
+import { mediaUrl } from "@/lib/media";
 import type { AlertKind } from "@/types/alert";
 
 // Short synthesized chimes, used when the streamer has not picked a file.
@@ -15,7 +16,7 @@ const NOTE_DURATION_S = 0.14;
 export function playAlertSound(kind: AlertKind, file: string | null, volume: number): void {
   if (volume <= 0) return;
   if (file) {
-    const audio = new Audio(`/media/${file}`);
+    const audio = new Audio(mediaUrl(file));
     audio.volume = Math.min(1, Math.max(0, volume));
     // Autoplay can be refused (a browser tab that was never clicked); the
     // visual alert still has to show, so never let this reject upwards.

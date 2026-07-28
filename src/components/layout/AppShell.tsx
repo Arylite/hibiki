@@ -7,6 +7,7 @@ import { BootSplash } from "@/components/layout/BootSplash";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { TitleBar } from "@/components/layout/TitleBar";
 import { toast, Toaster } from "@/components/ui/toast";
+import { setMediaBase } from "@/lib/media";
 import { useAlertHistoryStore } from "@/stores/alertHistoryStore";
 import { useAlertStyleStore } from "@/stores/alertStyleStore";
 import { useChatStore } from "@/stores/chatStore";
@@ -33,6 +34,10 @@ export function AppShell() {
   const loadNowPlaying = useNowPlayingStore((s) => s.load);
   const setNowPlaying = useNowPlayingStore((s) => s.set);
   const pushChat = useChatStore((s) => s.push);
+  const port = useServerStatusStore((s) => s.status?.wsPort);
+
+  // The window is not served by the media server, so previews have to name it.
+  useEffect(() => setMediaBase(port), [port]);
 
   useEffect(() => {
     loadAuth();

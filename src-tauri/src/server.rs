@@ -127,6 +127,7 @@ pub fn overlay_config(settings: &Settings, styles: &AlertStyles) -> serde_json::
         "alertPosition": settings.alert_position,
         "alertGapMs": settings.alert_gap_ms,
         "overlayPadding": settings.overlay_padding,
+        "overlayPaddingX": settings.overlay_padding_x,
         "styles": styles,
         "nowPlaying": settings.now_playing,
         "goal": settings.goal,

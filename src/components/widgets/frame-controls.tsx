@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { ColorInput } from "@/components/ui/color-input";
 import { Group, Row, Rows } from "@/components/ui/group";
+import { MediaField } from "@/components/ui/media-field";
 import { Segmented } from "@/components/ui/segmented";
 import { SliderRow } from "@/components/ui/slider";
-import { FONT_WEIGHTS, OVERLAY_FONTS } from "@/lib/overlay-style";
+import { FONT_WEIGHTS, OVERLAY_FONTS, sidePadding } from "@/lib/overlay-style";
 import type { TextShadow } from "@/types/settings";
 
 /** On stream, alerts and the three widgets are the same kind of object: a box
@@ -15,10 +16,12 @@ export interface FrameFields {
   /** Read, never written here - it decides whether the widget is a box. */
   background: string;
   backgroundOpacity: number;
+  backgroundMedia: string | null;
   cornerRadius: number;
   borderColor: string;
   borderWidth: number;
   padding: number;
+  paddingX: number;
 }
 
 export interface TypeFields {
@@ -47,14 +50,25 @@ interface FrameGroupProps {
 
 export function FrameGroup({ config, patch, width }: FrameGroupProps) {
   const bordered = config.borderWidth > 0 && config.borderColor !== "transparent";
-  const hasBackdrop = config.background !== "transparent";
+  const hasColour = config.background !== "transparent";
   /** Padding and radius only mean anything once the widget is a box. */
-  const boxed = hasBackdrop || bordered;
+  const boxed = hasColour || bordered || Boolean(config.backgroundMedia);
 
   return (
     <Group title="Frame" description="The box around it, once it has a backdrop or a border.">
       <Rows>
-        {hasBackdrop && (
+        <Row
+          label="Backdrop media"
+          description="An image or a looping video, filling the box over its colour."
+        >
+          <MediaField
+            accept="image/*,video/*"
+            value={config.backgroundMedia}
+            onChange={(backgroundMedia) => patch({ backgroundMedia })}
+          />
+        </Row>
+
+        {hasColour && (
           <Row label="Backdrop opacity" description="Lower lets the stream through it." wide>
             <SliderRow
               value={config.backgroundOpacity}
@@ -111,7 +125,11 @@ export function FrameGroup({ config, patch, width }: FrameGroupProps) {
           />
         </Row>
 
-        <Row label="Padding" description={boxed ? undefined : "Applies once there is a backdrop."} wide>
+        <Row
+          label="Padding, height"
+          description={boxed ? "Above and below the text." : "Applies once there is a backdrop."}
+          wide
+        >
           <SliderRow
             value={config.padding}
             onChange={(padding) => patch({ padding })}
@@ -119,6 +137,17 @@ export function FrameGroup({ config, patch, width }: FrameGroupProps) {
             max={72}
             step={2}
             format={(v) => `${v}px`}
+          />
+        </Row>
+
+        <Row label="Padding, width" description="Zero follows the height." wide>
+          <SliderRow
+            value={config.paddingX}
+            onChange={(paddingX) => patch({ paddingX })}
+            min={0}
+            max={120}
+            step={2}
+            format={(v) => (v === 0 ? `${sidePadding(config.padding, 0)}px` : `${v}px`)}
           />
         </Row>
 

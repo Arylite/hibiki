@@ -2,10 +2,21 @@ import { motion } from "framer-motion";
 
 import { frameStyle, isTransparent, positionStyle, textShadow } from "@/lib/overlay-style";
 import { cn } from "@/lib/utils";
+import { Backdrop } from "@/overlay/Backdrop";
 import type { GoalState, GoalWidget } from "@/types/settings";
 
 /** Progress towards a stream goal. */
-export function GoalBar({ config, state, pad }: { config: GoalWidget; state: GoalState; pad: number }) {
+export function GoalBar({
+  config,
+  state,
+  pad,
+  padX,
+}: {
+  config: GoalWidget;
+  state: GoalState;
+  pad: number;
+  padX: number;
+}) {
   if (!config.enabled) return null;
 
   const target = Math.max(1, state.target || config.target);
@@ -17,17 +28,19 @@ export function GoalBar({ config, state, pad }: { config: GoalWidget; state: Goa
   return (
     <div
       className={cn(
-        "absolute",
+        "absolute isolate overflow-hidden",
         // The responsive default, unless the streamer pinned a width.
         !config.width && "w-[22vw] min-w-[220px]",
       )}
       style={{
-        ...positionStyle(config.position, pad),
+        ...positionStyle(config.position, pad, padX),
         ...frameStyle(config),
         fontSize: config.fontSize,
         width: config.width || undefined,
       }}
     >
+      <Backdrop file={config.backgroundMedia} />
+
       <div className="flex items-baseline justify-between gap-3">
         <span className="truncate" style={{ textShadow: shadow }}>
           {config.label}

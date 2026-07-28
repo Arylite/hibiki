@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import { frameStyle, isTransparent, positionStyle, textShadow } from "@/lib/overlay-style";
 import { useNow } from "@/lib/use-now";
+import { Backdrop } from "@/overlay/Backdrop";
 import { visibleMessages, type ChatMessage } from "@/types/chat";
 import type { ChatWidget } from "@/types/settings";
 
@@ -21,10 +22,12 @@ export function ChatBox({
   messages,
   config,
   pad,
+  padX,
 }: {
   messages: ChatMessage[];
   config: ChatWidget;
   pad: number;
+  padX: number;
 }) {
   // Only ticks when something is actually waiting to expire.
   const now = useNow(config.fadeAfterSecs > 0 ? 1000 : 3_600_000);
@@ -39,15 +42,17 @@ export function ChatBox({
 
   return (
     <div
-      className="absolute flex flex-col justify-end"
+      className="absolute isolate flex flex-col justify-end overflow-hidden"
       style={{
-        ...positionStyle(config.position, pad),
+        ...positionStyle(config.position, pad, padX),
         ...frameStyle(config),
         fontSize: config.fontSize,
         width: config.width || undefined,
         maxWidth: config.width ? undefined : "32vw",
       }}
     >
+      <Backdrop file={config.backgroundMedia} />
+
       <AnimatePresence initial={false}>
         {shown.map((message) => (
           <motion.p

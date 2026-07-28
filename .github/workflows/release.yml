@@ -16,6 +16,7 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
 
 jobs:
   publish:
@@ -75,12 +76,10 @@ jobs:
         with:
           workspaces: src-tauri
 
-      # Cheap insurance: main can go red between a merge and this run, and a
-      # broken build is better caught here than by whoever downloads it.
-      - name: Verify before publishing
-        run: |
-          pnpm build
-          cargo test --manifest-path src-tauri/Cargo.toml -- --skip nowplaying::
+      # No verification step: CI runs clippy and the tests on every push to
+      # main, and a tag can only point at a commit that has already been
+      # through it. Building and testing again in debug, before building the
+      # same code in release, was several minutes for a second opinion.
 
       # The signing key is what installed copies check an update against: no
       # key, no updater artifacts, and the bundler stops rather than shipping
@@ -97,8 +96,8 @@ jobs:
           releaseBody: ${{ steps.release.outputs.body }}
           releaseDraft: false
           prerelease: ${{ steps.release.outputs.prerelease }}
-          # Both bundles are built; the setup.exe is the one that can install
-          # over a running copy without prompting for elevation twice.
+          # The bundle is NSIS only, but this is what points latest.json at the
+          # setup.exe rather than an MSI if one ever comes back.
           updaterJsonPreferNsis: true
 
       # Every push to main leaves a prerelease behind, so keep the newest few

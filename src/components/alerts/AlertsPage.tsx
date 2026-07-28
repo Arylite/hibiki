@@ -7,7 +7,6 @@ import { ALERT_KINDS, ALERT_META } from "@/lib/alert-meta";
 import { mediaUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
 import { useAlertStyleStore } from "@/stores/alertStyleStore";
-import { useServerStatusStore } from "@/stores/serverStatusStore";
 import type { AlertKind } from "@/types/alert";
 import type { AlertStyles } from "@/types/settings";
 
@@ -39,7 +38,6 @@ function AlertRail({
   selected: AlertKind;
   onSelect: (kind: AlertKind) => void;
 }) {
-  const port = useServerStatusStore((s) => s.status?.wsPort);
 
   return (
     <div className="flex w-[232px] shrink-0 flex-col border-r border-line">
@@ -64,7 +62,7 @@ function AlertRail({
                 )}
               >
                 {style.image ? (
-                  <img src={mediaUrl(style.image, port)} alt="" className="size-5 shrink-0 object-contain" />
+                  <img src={mediaUrl(style.image)} alt="" className="size-5 shrink-0 object-contain" />
                 ) : (
                   <Icon className={cn("size-4 shrink-0", active ? "text-accent" : "text-ink-3")} />
                 )}

@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import { frameStyle, isTransparent, positionStyle, textShadow } from "@/lib/overlay-style";
 import { cn } from "@/lib/utils";
+import { Backdrop } from "@/overlay/Backdrop";
 import { sourceLabel, type NowPlaying } from "@/types/nowplaying";
 import type { NowPlayingWidget as WidgetConfig } from "@/types/settings";
 
@@ -11,10 +12,12 @@ export function NowPlayingWidget({
   track,
   config,
   pad,
+  padX,
 }: {
   track: NowPlaying | null;
   config: WidgetConfig;
   pad: number;
+  padX: number;
 }) {
   const visible = Boolean(track) && config.enabled && (track!.playing || !config.hideWhenPaused);
   const transparent = isTransparent(config.background);
@@ -41,14 +44,16 @@ export function NowPlayingWidget({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 12 }}
           transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-          className={cn("absolute flex items-center gap-3", !config.width && "max-w-[36vw]")}
+          className={cn("absolute isolate flex items-center gap-3 overflow-hidden", !config.width && "max-w-[36vw]")}
           style={{
-            ...positionStyle(config.position, pad),
+            ...positionStyle(config.position, pad, padX),
             ...frameStyle(config),
             fontSize: config.fontSize,
             width: config.width || undefined,
           }}
         >
+          <Backdrop file={config.backgroundMedia} />
+
           {showArt ? (
             <img
               src={track.art!}

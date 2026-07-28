@@ -102,6 +102,7 @@ export function MusicPage() {
                 track={track ?? SAMPLE}
                 config={{ ...widget, enabled: true, hideWhenPaused: false }}
                 pad={settings.overlayPadding}
+                padX={settings.overlayPaddingX}
               />
             </StreamPreview>
             <p className="mt-1 px-0.5 text-sm text-ink-3">

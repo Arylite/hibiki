@@ -99,6 +99,7 @@ export function GoalPage() {
                 config={{ ...goal, enabled: true }}
                 state={{ current, target: goal.target }}
                 pad={settings.overlayPadding}
+                padX={settings.overlayPaddingX}
               />
             </StreamPreview>
           </Group>

@@ -64,8 +64,10 @@ pub struct Settings {
     pub alert_position: AlertPosition,
     /// Breathing room between two alerts, so a raid does not machine-gun them.
     pub alert_gap_ms: u32,
-    /// How far every widget sits from the edge of the stream, in pixels.
+    /// How far every widget sits from the top and bottom of the stream.
     pub overlay_padding: u32,
+    /// The same from the sides. 0 follows `overlay_padding`.
+    pub overlay_padding_x: u32,
     /// Keeps the window out of OBS display capture, screen shares and the
     /// Game Bar. On by default: the window shows an access token's worth of
     /// account state.
@@ -87,6 +89,7 @@ impl Default for Settings {
             alert_position: AlertPosition::Center,
             alert_gap_ms: 600,
             overlay_padding: 40,
+            overlay_padding_x: 0,
             hide_from_capture: true,
             minimize_to_tray: true,
             now_playing: NowPlayingWidget::default(),
@@ -123,6 +126,8 @@ pub struct ChatWidget {
     pub background: String,
     /// 100 is opaque; below that the stream shows through the backdrop.
     pub background_opacity: u32,
+    /// Image or video in the media dir, drawn over the backdrop colour.
+    pub background_media: Option<String>,
     pub font_size: u32,
 
     // Frame
@@ -130,6 +135,8 @@ pub struct ChatWidget {
     pub border_color: String,
     pub border_width: u32,
     pub padding: u32,
+    /// 0 follows the vertical padding, at the classic 1.25 proportion.
+    pub padding_x: u32,
     pub width: u32,
 
     // Type
@@ -162,12 +169,14 @@ impl Default for ChatWidget {
             text_color: "#ffffff".to_string(),
             background: "transparent".to_string(),
             background_opacity: 100,
+            background_media: None,
             font_size: 20,
 
             corner_radius: 12,
             border_color: "transparent".to_string(),
             border_width: 0,
             padding: 12,
+            padding_x: 0,
             width: 380,
 
             font_family: "inter".to_string(),
@@ -234,6 +243,8 @@ pub struct GoalWidget {
     pub background: String,
     /// 100 is opaque; below that the stream shows through the backdrop.
     pub background_opacity: u32,
+    /// Image or video in the media dir, drawn over the backdrop colour.
+    pub background_media: Option<String>,
     pub font_size: u32,
     /// Counting starts here, so "reset" is a timestamp rather than a delete.
     pub started_at: i64,
@@ -243,6 +254,8 @@ pub struct GoalWidget {
     pub border_color: String,
     pub border_width: u32,
     pub padding: u32,
+    /// 0 follows the vertical padding, at the classic 1.25 proportion.
+    pub padding_x: u32,
     /// 0 keeps the responsive default width.
     pub width: u32,
 
@@ -272,6 +285,7 @@ impl Default for GoalWidget {
             text_color: "#ffffff".to_string(),
             background: "transparent".to_string(),
             background_opacity: 100,
+            background_media: None,
             font_size: 18,
             started_at: 0,
 
@@ -279,6 +293,7 @@ impl Default for GoalWidget {
             border_color: "transparent".to_string(),
             border_width: 0,
             padding: 16,
+            padding_x: 0,
             width: 0,
 
             font_family: "inter".to_string(),
@@ -306,6 +321,8 @@ pub struct NowPlayingWidget {
     pub background: String,
     /// 100 is opaque; below that the stream shows through the backdrop.
     pub background_opacity: u32,
+    /// Image or video in the media dir, drawn over the backdrop colour.
+    pub background_media: Option<String>,
     pub font_size: u32,
     pub show_artist: bool,
     pub show_source: bool,
@@ -317,6 +334,8 @@ pub struct NowPlayingWidget {
     pub border_color: String,
     pub border_width: u32,
     pub padding: u32,
+    /// 0 follows the vertical padding, at the classic 1.25 proportion.
+    pub padding_x: u32,
     /// 0 keeps the responsive default width.
     pub width: u32,
 
@@ -348,6 +367,7 @@ impl Default for NowPlayingWidget {
             text_color: "#ffffff".to_string(),
             background: "transparent".to_string(),
             background_opacity: 100,
+            background_media: None,
             font_size: 18,
             show_artist: true,
             show_source: false,
@@ -358,6 +378,7 @@ impl Default for NowPlayingWidget {
             border_color: "transparent".to_string(),
             border_width: 0,
             padding: 12,
+            padding_x: 0,
             width: 0,
 
             font_family: "inter".to_string(),
@@ -419,6 +440,8 @@ pub struct AlertStyle {
     pub background: String,
     /// 100 is opaque; below that the stream shows through the backdrop.
     pub background_opacity: u32,
+    /// Image or video in the media dir, drawn over the backdrop colour.
+    pub background_media: Option<String>,
     pub image_size: u32,
     pub font_size: u32,
     /// Ignore repeats of this alert for N ms. 0 disables it.
@@ -431,6 +454,8 @@ pub struct AlertStyle {
     pub border_color: String,
     pub border_width: u32,
     pub padding: u32,
+    /// 0 follows the vertical padding, at the classic 1.25 proportion.
+    pub padding_x: u32,
 
     // Type
     pub font_family: String,
@@ -461,6 +486,7 @@ impl Default for AlertStyle {
             text_color: "#ffffff".to_string(),
             background: "transparent".to_string(),
             background_opacity: 100,
+            background_media: None,
             image_size: 200,
             font_size: 32,
             cooldown_ms: 0,
@@ -470,6 +496,7 @@ impl Default for AlertStyle {
             border_color: "transparent".to_string(),
             border_width: 0,
             padding: 32,
+            padding_x: 0,
 
             font_family: "inter".to_string(),
             font_weight: 700,

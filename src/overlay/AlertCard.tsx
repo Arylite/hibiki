@@ -1,7 +1,9 @@
 import { motion, type Variants } from "framer-motion";
 
 import { renderTemplate } from "@/lib/alert-meta";
+import { mediaUrl } from "@/lib/media";
 import { frameStyle, isTransparent, textShadow } from "@/lib/overlay-style";
+import { Backdrop } from "@/overlay/Backdrop";
 import { cn } from "@/lib/utils";
 import type { AlertPayload } from "@/types/alert";
 import type { AlertAnimation, AlertLayout, AlertStyle } from "@/types/settings";
@@ -38,12 +40,14 @@ export function AlertCard({ alert, style }: { alert: AlertPayload; style: AlertS
       animate="shown"
       exit="gone"
       transition={{ type: "spring", stiffness: 260, damping: 24 }}
-      className={cn("flex max-w-[80vw] items-center gap-6", DIRECTION[style.layout])}
+      className={cn("relative isolate flex max-w-[80vw] items-center gap-6 overflow-hidden", DIRECTION[style.layout])}
       style={frameStyle(style)}
     >
+      <Backdrop file={style.backgroundMedia} />
+
       {style.image && (
         <img
-          src={`/media/${style.image}`}
+          src={mediaUrl(style.image)}
           alt=""
           style={{
             width: style.imageSize,

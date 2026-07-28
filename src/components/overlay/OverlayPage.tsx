@@ -119,7 +119,7 @@ export function OverlayPage() {
 
           <Group title="Edge padding" description="How far every widget sits from the edge of the stream.">
             <Rows>
-              <Row wide>
+              <Row label="Height" description="Top and bottom." wide>
                 <SliderRow
                   value={settings.overlayPadding}
                   onChange={(overlayPadding) => update({ overlayPadding })}
@@ -127,6 +127,16 @@ export function OverlayPage() {
                   max={200}
                   step={4}
                   format={(v) => `${v}px`}
+                />
+              </Row>
+              <Row label="Width" description="Zero follows the height." wide>
+                <SliderRow
+                  value={settings.overlayPaddingX}
+                  onChange={(overlayPaddingX) => update({ overlayPaddingX })}
+                  min={0}
+                  max={200}
+                  step={4}
+                  format={(v) => (v === 0 ? `${settings.overlayPadding}px` : `${v}px`)}
                 />
               </Row>
             </Rows>

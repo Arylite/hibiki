@@ -79,6 +79,10 @@ export function Sidebar() {
         ))}
       </nav>
 
+      <p className="shrink-0 px-4 pb-2.5 text-sm text-ink-3">
+        Made with <span className="text-danger">&#128150;</span> by LeVox
+      </p>
+
       <div className="shrink-0 border-t border-line p-3">
         {settings ? (
           user ? (

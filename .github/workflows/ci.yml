@@ -17,6 +17,9 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
+  # Nothing here is rebuilt twice in a row, so incremental artifacts are pure
+  # cache weight: they slow the restore down without ever paying for it.
+  CARGO_INCREMENTAL: 0
 
 jobs:
   web:
@@ -44,6 +47,14 @@ jobs:
       - name: Typecheck and build
         run: pnpm build
 
+      # The Rust job needs these assets but not the toolchain that makes them:
+      # building them again on a Windows runner costs twice as much per minute.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 1
+
       - name: Self-checks
         run: |
           node --experimental-strip-types src/lib/time.check.ts
@@ -55,6 +66,7 @@ jobs:
     # Windows only, and not for CI convenience: the now-playing reader talks
     # to WinRT's media session manager, which exists nowhere else.
     runs-on: windows-latest
+    needs: web
     permissions:
       contents: read
     steps:
@@ -62,19 +74,12 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - run: pnpm install --frozen-lockfile
-
       # tauri-build resolves `frontendDist` at compile time, so the Rust side
-      # does not compile until the front end has been built at least once.
-      - name: Build the front end
-        run: pnpm build
+      # does not compile until the front end exists. It was built once already.
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
 
       - uses: dtolnay/rust-toolchain@stable
         with:

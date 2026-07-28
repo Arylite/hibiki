@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Play, RotateCcw, Volume2 } from "lucide-react";
 
 import { CopyStyleDialog } from "@/components/alerts/CopyStyleDialog";
-import { MediaField } from "@/components/alerts/MediaField";
+import { MediaField } from "@/components/ui/media-field";
 import { Block, Masonry } from "@/components/layout/Page";
 import { FrameGroup, TypeGroup } from "@/components/widgets/frame-controls";
 import { BadgeButton } from "@/components/ui/badge";
@@ -21,7 +21,6 @@ import { mediaUrl } from "@/lib/media";
 import { AlertCard } from "@/overlay/AlertCard";
 import { alertsService } from "@/services/alerts/alertsService";
 import { useAlertStyleStore } from "@/stores/alertStyleStore";
-import { useServerStatusStore } from "@/stores/serverStatusStore";
 import type { AlertKind } from "@/types/alert";
 import type { AlertAnimation, AlertLayout, AlertStyle, TextAlign } from "@/types/settings";
 
@@ -58,7 +57,6 @@ const AMOUNT_LABELS: Partial<Record<AlertKind, string>> = {
 
 export function AlertDetail({ kind, style }: { kind: AlertKind; style: AlertStyle }) {
   const update = useAlertStyleStore((s) => s.update);
-  const port = useServerStatusStore((s) => s.status?.wsPort);
 
   const { label, description } = ALERT_META[kind];
   const amountLabel = AMOUNT_LABELS[kind];
@@ -108,7 +106,7 @@ export function AlertDetail({ kind, style }: { kind: AlertKind; style: AlertStyl
                   preview={
                     style.image ? (
                       <img
-                        src={mediaUrl(style.image, port)}
+                        src={mediaUrl(style.image)}
                         alt=""
                         className="size-8 rounded-sm border border-line object-contain"
                       />
@@ -152,7 +150,7 @@ export function AlertDetail({ kind, style }: { kind: AlertKind; style: AlertStyl
                         size="icon-sm"
                         aria-label="Play sound"
                         onClick={() => {
-                          const audio = new Audio(mediaUrl(style.sound!, port));
+                          const audio = new Audio(mediaUrl(style.sound!));
                           audio.volume = style.volume;
                           audio.play().catch(() => {});
                         }}

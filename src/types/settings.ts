@@ -27,10 +27,15 @@ export type TextAlign = z.infer<typeof TextAlignSchema>;
 const FrameFields = {
   /** 100 is opaque; below that the stream shows through the backdrop. */
   backgroundOpacity: z.number().int(),
+  /** Image or video in the media dir, drawn over the backdrop colour. */
+  backgroundMedia: z.string().nullable(),
   cornerRadius: z.number().int(),
   borderColor: z.string(),
   borderWidth: z.number().int(),
+  /** Top and bottom. */
   padding: z.number().int(),
+  /** Left and right. 0 follows `padding`, at the classic 1.25 proportion. */
+  paddingX: z.number().int(),
   fontFamily: z.string(),
   fontWeight: z.number().int(),
   textShadow: TextShadowSchema,
@@ -123,8 +128,10 @@ export const SettingsSchema = z.object({
   clientId: z.string(),
   alertPosition: AlertPositionSchema,
   alertGapMs: z.number().int(),
-  /** How far every widget sits from the edge of the stream, in pixels. */
+  /** How far every widget sits from the top and bottom of the stream. */
   overlayPadding: z.number().int(),
+  /** The same from the sides. 0 follows `overlayPadding`. */
+  overlayPaddingX: z.number().int(),
   /** Keeps the window out of OBS display capture and screen shares. */
   hideFromCapture: z.boolean(),
   /** Minimising sends the window to the tray rather than the taskbar. */
@@ -181,6 +188,7 @@ export const OverlayConfigSchema = z.object({
   alertPosition: AlertPositionSchema,
   alertGapMs: z.number(),
   overlayPadding: z.number(),
+  overlayPaddingX: z.number(),
   styles: AlertStylesSchema,
   nowPlaying: NowPlayingWidgetSchema,
   goal: GoalWidgetSchema,

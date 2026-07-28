@@ -34,8 +34,10 @@ a refresh.
 | Goal    | Progress towards a follow, subscription or bits target     |
 | Chat    | Your channel's chat, filtered for the stream               |
 
-Styles export to and import from a single JSON file in Settings, and one
-alert's look can be copied onto the others from its own page.
+Every one of them takes an image or a looping video as its backdrop, and its
+padding is set separately for height and width. Styles export to and import
+from a single JSON file in Settings, and one alert's look can be copied onto
+the others from its own page.
 
 ## Development
 
@@ -68,6 +70,16 @@ build over themselves. That needs the update signing key: keep
 `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` in the
 repository secrets, and keep the private key itself somewhere safe. Losing it
 means every installed copy has to be reinstalled by hand.
+
+## License
+
+Copyright (c) 2026 Reborn Esport, under the
+[PolyForm Noncommercial License 1.0.0](LICENSE).
+
+Use it, change it and share it for any noncommercial purpose, and keep the
+notice in `LICENSE` with it so the work stays credited to Reborn Esport.
+Selling it, or selling a product built on it, is not permitted. Ask us if you
+want a commercial licence.
 
 ## Layout
 

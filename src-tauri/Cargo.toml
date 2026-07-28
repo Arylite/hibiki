@@ -1,9 +1,11 @@
 [package]
 name = "hibiki"
-version = "0.2.0"
-description = "A Tauri App"
-authors = ["you"]
+version = "0.3.0"
+description = "Twitch alerts, chat, now-playing and goal widgets for OBS"
+authors = ["Reborn Esport"]
 edition = "2021"
+license-file = "../LICENSE"
+publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

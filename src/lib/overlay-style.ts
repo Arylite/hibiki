@@ -51,15 +51,20 @@ export function withOpacity(color: string, opacity: number): string {
   return color + alpha.toString(16).padStart(2, "0");
 }
 
+/** Horizontal padding follows the vertical one at the 32/40 proportion until
+ *  the streamer sets it themselves. */
+export const sidePadding = (padding: number, paddingX: number) => paddingX || Math.round(padding * 1.25);
+
 /** Where a widget sits on the stream. Centring uses the standalone `translate`
  *  property, not a transform: the entrance animations own `transform`. */
-export function positionStyle(position: AlertPosition, pad: number): CSSProperties {
+export function positionStyle(position: AlertPosition, pad: number, padX: number): CSSProperties {
   const [vertical, horizontal] = position === "center" ? ["center", "center"] : position.split("-");
+  const side = padX || pad;
   return {
     top: vertical === "top" ? pad : vertical === "center" ? "50%" : undefined,
     bottom: vertical === "bottom" ? pad : undefined,
-    left: horizontal === "left" ? pad : horizontal === "center" ? "50%" : undefined,
-    right: horizontal === "right" ? pad : undefined,
+    left: horizontal === "left" ? side : horizontal === "center" ? "50%" : undefined,
+    right: horizontal === "right" ? side : undefined,
     translate: `${horizontal === "center" ? "-50%" : "0"} ${vertical === "center" ? "-50%" : "0"}`,
   };
 }
@@ -67,11 +72,13 @@ export function positionStyle(position: AlertPosition, pad: number): CSSProperti
 interface FrameConfig {
   background: string;
   backgroundOpacity: number;
+  backgroundMedia: string | null;
   textColor: string;
   cornerRadius: number;
   borderColor: string;
   borderWidth: number;
   padding: number;
+  paddingX: number;
   fontFamily: string;
   fontWeight: number;
 }
@@ -81,15 +88,15 @@ interface FrameConfig {
 export function frameStyle(config: FrameConfig): CSSProperties {
   const transparent = config.background === "transparent";
   const bordered = config.borderWidth > 0 && config.borderColor !== "transparent";
-  const boxed = !transparent || bordered;
+  // A picture behind the text is as much a box as a colour is.
+  const boxed = !transparent || bordered || Boolean(config.backgroundMedia);
 
   return {
     background: transparent ? undefined : withOpacity(config.background, config.backgroundOpacity),
     color: config.textColor,
     border: bordered ? `${config.borderWidth}px solid ${config.borderColor}` : undefined,
     borderRadius: boxed ? config.cornerRadius : undefined,
-    // 1.25 holds the 32/40 vertical-to-horizontal proportion at every size.
-    padding: boxed ? `${config.padding}px ${Math.round(config.padding * 1.25)}px` : undefined,
+    padding: boxed ? `${config.padding}px ${sidePadding(config.padding, config.paddingX)}px` : undefined,
     fontFamily: fontStack(config.fontFamily),
     fontWeight: config.fontWeight,
   };

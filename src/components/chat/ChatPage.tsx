@@ -98,6 +98,7 @@ export function ChatPage() {
                 messages={messages.length > 0 ? messages : SAMPLE}
                 config={{ ...chat, enabled: true, fadeAfterSecs: 0 }}
                 pad={settings.overlayPadding}
+                padX={settings.overlayPaddingX}
               />
             </StreamPreview>
             <p className="mt-1 px-0.5 text-sm text-ink-3">
