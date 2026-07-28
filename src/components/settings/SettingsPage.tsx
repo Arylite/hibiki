@@ -2,23 +2,21 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { getVersion } from "@tauri-apps/api/app";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { check, type Update } from "@tauri-apps/plugin-updater";
-import { Download, ExternalLink, Upload } from "lucide-react";
+import { Download, ExternalLink } from "lucide-react";
 
 import { Page, PageHeader, Stack } from "@/components/layout/Page";
 import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/ui/copy-button";
 import { Group, Panel, Row, Rows } from "@/components/ui/group";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { LoadingPane } from "@/components/ui/skeleton";
 import { SliderRow } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/toast";
-import { downloadStyleFile, embedMedia, readStyleFile, restoreMedia } from "@/lib/style-file";
-import { useAlertStyleStore } from "@/stores/alertStyleStore";
 import { useAuthStore } from "@/stores/authStore";
 import { useServerStatusStore } from "@/stores/serverStatusStore";
 import { useSettingsStore } from "@/stores/settingsStore";
-import type { AlertKind } from "@/types/alert";
 
 export function SettingsPage() {
   const settings = useSettingsStore((s) => s.settings);
@@ -33,7 +31,6 @@ export function SettingsPage() {
       <Stack>
         <TwitchSection />
         <PlaybackSection />
-        <StylesSection />
         <UpdatesSection />
         <AdvancedSection />
       </Stack>
@@ -43,8 +40,10 @@ export function SettingsPage() {
 
 function TwitchSection() {
   const user = useAuthStore((s) => s.user);
+  const accounts = useAuthStore((s) => s.accounts);
   const authStatus = useAuthStore((s) => s.status);
   const login = useAuthStore((s) => s.login);
+  const switchTo = useAuthStore((s) => s.switchTo);
   const logout = useAuthStore((s) => s.logout);
 
   const settings = useSettingsStore((s) => s.settings);
@@ -61,12 +60,35 @@ function TwitchSection() {
     <>
       <Group title="Twitch">
         <Rows>
-          <Row label="Account" description={user ? `Signed in as @${user.login}` : "Not signed in."}>
-            {user ? (
-              <Button onClick={logout}>Sign out</Button>
-            ) : (
-              <Button variant="primary" onClick={login} disabled={authStatus === "loading"}>
-                Connect Twitch
+          <Row
+            label="Account"
+            description={
+              accounts.length > 1
+                ? `${accounts.length} accounts signed in. Alerts and chat follow the one on stream.`
+                : user
+                  ? `Signed in as @${user.login}`
+                  : "Not signed in."
+            }
+          >
+            {user && accounts.length > 1 && (
+              <Select
+                label="Account on stream"
+                value={user.userId}
+                onChange={switchTo}
+                options={accounts.map((account) => ({
+                  value: account.userId,
+                  label: account.displayName,
+                  hint: `@${account.login}`,
+                }))}
+                className="max-w-[180px] flex-1"
+              />
+            )}
+            <Button onClick={login} disabled={authStatus === "loading"} variant={user ? "secondary" : "primary"}>
+              {user ? "Add account" : "Connect Twitch"}
+            </Button>
+            {user && (
+              <Button variant="ghost" onClick={logout}>
+                Sign out
               </Button>
             )}
           </Row>
@@ -162,92 +184,6 @@ function PlaybackSection() {
             step={0.05}
             format={(v) => `${Math.round(v * 100)}%`}
           />
-        </Row>
-      </Rows>
-    </Group>
-  );
-}
-
-/** Backup and restore for a look, and the way to hand one to someone else. */
-function StylesSection() {
-  const settings = useSettingsStore((s) => s.settings);
-  const update = useSettingsStore((s) => s.update);
-  const styles = useAlertStyleStore((s) => s.styles);
-  const updateStyle = useAlertStyleStore((s) => s.update);
-  const input = useRef<HTMLInputElement>(null);
-  const [busy, setBusy] = useState<"exporting" | "importing" | null>(null);
-
-  const exportFile = async () => {
-    if (!settings || !styles) return;
-    setBusy("exporting");
-    try {
-      downloadStyleFile(
-        await embedMedia({
-          hibikiStyles: 1,
-          styles,
-          nowPlaying: settings.nowPlaying,
-          goal: settings.goal,
-          chat: settings.chat,
-        }),
-      );
-    } catch (err) {
-      toast.error("Could not export the styles", String(err));
-    } finally {
-      setBusy(null);
-    }
-  };
-
-  const importFile = async (file: File | undefined) => {
-    if (!file) return;
-    setBusy("importing");
-    try {
-      const incoming = await restoreMedia(await readStyleFile(file));
-      for (const [kind, style] of Object.entries(incoming.styles ?? {})) {
-        updateStyle(kind as AlertKind, style);
-      }
-      if (settings) {
-        update({
-          ...(incoming.nowPlaying && { nowPlaying: { ...settings.nowPlaying, ...incoming.nowPlaying } }),
-          // The goal's clock belongs to this install, not to the file.
-          ...(incoming.goal && {
-            goal: { ...settings.goal, ...incoming.goal, startedAt: settings.goal.startedAt },
-          }),
-          ...(incoming.chat && { chat: { ...settings.chat, ...incoming.chat } }),
-        });
-      }
-      toast.ok("Styles imported");
-    } catch (err) {
-      toast.error("That file is not a Hibiki style file", String(err));
-    } finally {
-      setBusy(null);
-      if (input.current) input.current.value = "";
-    }
-  };
-
-  return (
-    <Group
-      title="Styles"
-      description="The alerts and the three on-stream widgets, as one file. Images, sounds and backdrops travel inside it."
-    >
-      <Rows>
-        <Row label="Export" description="Writes it to your downloads folder.">
-          <Button disabled={!settings || !styles || busy !== null} onClick={exportFile}>
-            <Download />
-            {busy === "exporting" ? "Collecting media..." : "Export"}
-          </Button>
-        </Row>
-        <Row label="Import" description="Replaces the looks in the file. Everything else is left alone.">
-          <input
-            ref={input}
-            type="file"
-            accept="application/json,.json"
-            className="hidden"
-            onChange={(e) => importFile(e.target.files?.[0])}
-          />
-          <Button onClick={() => input.current?.click()} disabled={busy !== null}>
-            <Upload />
-            {busy === "importing" ? "Importing..." : "Import"}
-          </Button>
         </Row>
       </Rows>
     </Group>

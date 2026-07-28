@@ -1,5 +1,6 @@
 import {
   Bell,
+  Bookmark,
   Gauge,
   History,
   Layers,
@@ -11,7 +12,16 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-export type Tab = "dashboard" | "history" | "alerts" | "overlay" | "music" | "goal" | "chat" | "settings";
+export type Tab =
+  | "dashboard"
+  | "history"
+  | "alerts"
+  | "overlay"
+  | "music"
+  | "goal"
+  | "chat"
+  | "presets"
+  | "settings";
 
 export interface NavEntry {
   id: Tab;
@@ -43,7 +53,10 @@ export const NAV_GROUPS: { label: string; items: NavEntry[] }[] = [
   },
   {
     label: "System",
-    items: [{ id: "settings", label: "Settings", icon: Settings, path: "/settings" }],
+    items: [
+      { id: "presets", label: "Presets", icon: Bookmark, path: "/presets" },
+      { id: "settings", label: "Settings", icon: Settings, path: "/settings" },
+    ],
   },
 ];
 

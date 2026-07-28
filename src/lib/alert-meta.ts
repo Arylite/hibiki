@@ -1,4 +1,4 @@
-import { Gem, Gift, Rocket, Star, UserPlus, type LucideIcon } from "lucide-react";
+import { Gem, Gift, Rocket, Sparkles, Star, UserPlus, type LucideIcon } from "lucide-react";
 
 import { AlertKindSchema, type AlertKind, type AlertPayload } from "@/types/alert";
 
@@ -34,24 +34,31 @@ export const ALERT_META: Record<AlertKind, AlertMeta> = {
     description: "Fires when a viewer cheers with bits.",
     icon: Gem,
   },
+  channelPoints: {
+    label: "Channel points",
+    description:
+      "Fires when a viewer redeems a channel point reward. Sign out and back in if you connected Twitch before this existed.",
+    icon: Sparkles,
+  },
 };
 
 /** Every kind is independently styleable, in the backend's catalogue order. */
 export const ALERT_KINDS = AlertKindSchema.options;
 
-export const TEMPLATE_TOKENS = ["{user}", "{amount}", "{tier}", "{message}"] as const;
+export const TEMPLATE_TOKENS = ["{user}", "{amount}", "{tier}", "{reward}", "{message}"] as const;
 
 /** Fills a message template from a payload. Unknown tokens stay literal so a
  *  typo is visible on screen instead of silently vanishing. */
 export function renderTemplate(template: string, alert: AlertPayload): string {
   const values: Record<string, string> = {
     "{user}": alert.username,
-    "{amount}": String(alert.bits ?? alert.viewers ?? alert.giftCount ?? ""),
+    "{amount}": String(alert.bits ?? alert.viewers ?? alert.giftCount ?? alert.points ?? ""),
     "{tier}": alert.tier ?? "",
+    "{reward}": alert.reward ?? "",
     "{message}": alert.message ?? "",
   };
   return template
-    .replace(/\{user\}|\{amount\}|\{tier\}|\{message\}/g, (token) => values[token] ?? token)
+    .replace(/\{user\}|\{amount\}|\{tier\}|\{reward\}|\{message\}/g, (token) => values[token] ?? token)
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -71,6 +78,8 @@ export function describeAlert(alert: AlertPayload): string {
       return `raided with ${alert.viewers ?? 0} viewers`;
     case "cheer":
       return `cheered ${alert.bits ?? 0} bits`;
+    case "channelPoints":
+      return `redeemed ${alert.reward ?? "a reward"}`;
   }
 }
 
@@ -86,6 +95,8 @@ export function sampleAlert(kind: AlertKind): AlertPayload {
       return { ...base, username: "test_streamer", viewers: 25 };
     case "cheer":
       return { ...base, bits: 100, message: "Great stream!" };
+    case "channelPoints":
+      return { ...base, reward: "Hydrate!", points: 500, message: "drink some water" };
     default:
       return base;
   }

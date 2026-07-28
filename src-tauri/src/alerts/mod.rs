@@ -68,6 +68,8 @@ pub fn new_alert(kind: AlertKind) -> Alert {
         viewers: None,
         message: None,
         gift_count: None,
+        reward: None,
+        points: None,
         created_at: now.as_millis() as i64,
     }
 }

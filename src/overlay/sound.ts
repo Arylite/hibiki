@@ -8,6 +8,7 @@ const NOTES: Record<AlertKind, number[]> = {
   subscribeGift: [523, 659, 784, 988],
   raid: [392, 494, 587, 784],
   cheer: [784, 988],
+  channelPoints: [880, 1046],
 };
 
 const NOTE_DURATION_S = 0.14;

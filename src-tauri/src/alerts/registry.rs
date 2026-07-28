@@ -112,6 +112,29 @@ pub const ALERTS: &[AlertDef] = &[
             alert.message = Some("Great stream!".to_string());
         },
     },
+    AlertDef {
+        kind: AlertKind::ChannelPoints,
+        key: "channelPoints",
+        event_type: "channel.channel_points_custom_reward_redemption.add",
+        event_version: "1",
+        scope: Some("channel:read:redemptions"),
+        condition: |id| json!({ "broadcaster_user_id": id }),
+        style: || AlertStyle::new("Channel Points", "{user} redeemed {reward}", "#0ea5e9"),
+        parse: |event, alert| {
+            alert.reward = event["reward"]["title"].as_str().map(str::to_string);
+            alert.points = event["reward"]["cost"].as_i64();
+            // The prompt is optional on a reward, and empty is not a message.
+            alert.message = event["user_input"]
+                .as_str()
+                .filter(|input| !input.trim().is_empty())
+                .map(str::to_string);
+        },
+        sample: |alert| {
+            alert.reward = Some("Hydrate!".to_string());
+            alert.points = Some(500);
+            alert.message = Some("drink some water".to_string());
+        },
+    },
 ];
 
 impl AlertKind {

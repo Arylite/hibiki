@@ -27,17 +27,23 @@ a refresh.
 
 ## Widgets
 
-| Page    | What it puts on stream                                    |
-| ------- | --------------------------------------------------------- |
-| Alerts  | Follow, subscription, gifted subs, raid and cheer cards    |
-| Music   | Whatever is playing in any player Windows knows about      |
-| Goal    | Progress towards a follow, subscription or bits target     |
-| Chat    | Your channel's chat, filtered for the stream               |
+| Page   | What it puts on stream                                                    |
+| ------ | ------------------------------------------------------------------------- |
+| Alerts | Follow, subscription, gifted subs, raid, cheer and channel point cards     |
+| Music  | Whatever is playing in any player Windows knows about                      |
+| Goal   | Progress towards a follow, subscription or bits target                     |
+| Chat   | Your channel's chat, filtered for the stream                               |
 
 Every one of them takes an image or a looping video as its backdrop, and its
-padding is set separately for height and width. Styles export to and import
-from a single JSON file in Settings, and one alert's look can be copied onto
-the others from its own page.
+padding is set separately for height and width. One alert's look can be copied
+onto the others from its own page.
+
+Presets keep a whole look under a name and swap it in one click. A preset
+travels between machines as a `.rbn` file, which carries its images, sounds
+and backdrops inside it rather than pointing at files only one install has.
+
+Several Twitch accounts can be signed in at once; the one on stream is chosen
+from a dropdown in Settings, and alerts and chat follow it.
 
 ## Development
 

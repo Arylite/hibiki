@@ -53,6 +53,13 @@ const AMOUNT_LABELS: Partial<Record<AlertKind, string>> = {
   cheer: "bits",
   raid: "viewers",
   subscribeGift: "gifted subs",
+  channelPoints: "points",
+};
+
+/** Bits and points come in far bigger numbers than viewers or gifted subs. */
+const AMOUNT_RANGE: Partial<Record<AlertKind, { max: number; step: number }>> = {
+  cheer: { max: 1000, step: 50 },
+  channelPoints: { max: 50000, step: 500 },
 };
 
 export function AlertDetail({ kind, style }: { kind: AlertKind; style: AlertStyle }) {
@@ -309,8 +316,8 @@ export function AlertDetail({ kind, style }: { kind: AlertKind; style: AlertStyl
                     value={style.minAmount}
                     onChange={(minAmount) => update(kind, { minAmount })}
                     min={0}
-                    max={kind === "cheer" ? 1000 : 50}
-                    step={kind === "cheer" ? 50 : 1}
+                    max={AMOUNT_RANGE[kind]?.max ?? 50}
+                    step={AMOUNT_RANGE[kind]?.step ?? 1}
                     format={(v) => (v === 0 ? "Off" : String(v))}
                   />
                 </Row>

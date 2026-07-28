@@ -2,7 +2,7 @@ use rusqlite::{params, Connection};
 use std::path::Path;
 
 use crate::alerts::AlertStyles;
-use crate::models::{Alert, AlertConfig, AlertKind, GoalKind, Settings, TwitchCredentials};
+use crate::models::{Alert, AlertConfig, AlertKind, GoalKind, Preset, Settings, TwitchCredentials};
 
 /// Alerts older than this fall off the end: a stream log, not an archive, and
 /// it stays cheap to query on every dashboard poll.
@@ -126,16 +126,69 @@ pub fn save_alert_styles(conn: &Connection, styles: &AlertStyles) {
     set(conn, "alert_styles", &serde_json::to_string(styles).unwrap());
 }
 
-pub fn load_credentials(conn: &Connection) -> Option<TwitchCredentials> {
-    get(conn, "twitch_credentials").and_then(|v| serde_json::from_str(&v).ok())
+/// Saved looks, newest first. One kv row: a handful of style sheets is not a
+/// table's worth of data, and they are only ever read and written whole.
+pub fn load_presets(conn: &Connection) -> Vec<Preset> {
+    get(conn, "presets")
+        .and_then(|v| serde_json::from_str(&v).ok())
+        .unwrap_or_default()
 }
 
-pub fn save_credentials(conn: &Connection, creds: &TwitchCredentials) {
-    set(conn, "twitch_credentials", &serde_json::to_string(creds).unwrap());
+pub fn save_presets(conn: &Connection, presets: &[Preset]) {
+    set(conn, "presets", &serde_json::to_string(presets).unwrap());
 }
 
-pub fn clear_credentials(conn: &Connection) {
+/// Every signed-in account, the active one first. Falls back to the single
+/// account an install made before Hibiki could hold several.
+pub fn load_accounts(conn: &Connection) -> Vec<TwitchCredentials> {
+    if let Some(accounts) = get(conn, "twitch_accounts").and_then(|v| serde_json::from_str::<Vec<_>>(&v).ok()) {
+        return accounts;
+    }
+    get(conn, "twitch_credentials")
+        .and_then(|v| serde_json::from_str(&v).ok())
+        .into_iter()
+        .collect()
+}
+
+pub fn save_accounts(conn: &Connection, accounts: &[TwitchCredentials]) {
+    set(conn, "twitch_accounts", &serde_json::to_string(accounts).unwrap());
+    // The single-account key would otherwise resurrect a signed-out account.
     delete(conn, "twitch_credentials");
+}
+
+/// The account everything else in the app acts as.
+pub fn load_credentials(conn: &Connection) -> Option<TwitchCredentials> {
+    load_accounts(conn).into_iter().next()
+}
+
+/// Signing in adds an account and makes it the active one, replacing any
+/// earlier token for the same Twitch user.
+pub fn save_credentials(conn: &Connection, creds: &TwitchCredentials) {
+    let mut accounts = load_accounts(conn);
+    accounts.retain(|account| account.user_id != creds.user_id);
+    accounts.insert(0, creds.clone());
+    save_accounts(conn, &accounts);
+}
+
+/// Signs out of the active account only; the others stay signed in.
+pub fn clear_credentials(conn: &Connection) {
+    let mut accounts = load_accounts(conn);
+    if !accounts.is_empty() {
+        accounts.remove(0);
+    }
+    save_accounts(conn, &accounts);
+}
+
+/// Makes an already signed-in account the active one. False when it is gone.
+pub fn activate_account(conn: &Connection, user_id: &str) -> bool {
+    let mut accounts = load_accounts(conn);
+    let Some(at) = accounts.iter().position(|account| account.user_id == user_id) else {
+        return false;
+    };
+    let account = accounts.remove(at);
+    accounts.insert(0, account);
+    save_accounts(conn, &accounts);
+    true
 }
 
 #[cfg(test)]
@@ -152,6 +205,8 @@ mod tests {
             viewers: if matches!(kind, AlertKind::Raid) { Some(amount) } else { None },
             message: None,
             gift_count: if matches!(kind, AlertKind::SubscribeGift) { Some(amount) } else { None },
+            reward: None,
+            points: if matches!(kind, AlertKind::ChannelPoints) { Some(amount) } else { None },
             created_at,
         }
     }

@@ -10,6 +10,7 @@ pub enum AlertKind {
     SubscribeGift,
     Raid,
     Cheer,
+    ChannelPoints,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -29,14 +30,24 @@ pub struct Alert {
     pub message: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gift_count: Option<i64>,
+    /// The channel point reward's name.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reward: Option<String>,
+    /// What that reward cost.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub points: Option<i64>,
     pub created_at: i64,
 }
 
 impl Alert {
-    /// The number this event is "worth": bits, viewers, gifted subs. Drives
-    /// both the minimum-amount filter and goal progress.
+    /// The number this event is "worth": bits, viewers, gifted subs, points.
+    /// Drives both the minimum-amount filter and goal progress.
     pub fn amount(&self) -> i64 {
-        self.bits.or(self.viewers).or(self.gift_count).unwrap_or(0)
+        self.bits
+            .or(self.viewers)
+            .or(self.gift_count)
+            .or(self.points)
+            .unwrap_or(0)
     }
 }
 
@@ -543,6 +554,20 @@ impl Default for AlertConfig {
             cheer: true,
         }
     }
+}
+
+/// A whole look, kept by name. Media is referenced rather than copied: the
+/// files are already in this install's media dir, and only a .rbn leaving the
+/// machine has to carry them.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Preset {
+    pub name: String,
+    pub saved_at: i64,
+    pub styles: crate::alerts::AlertStyles,
+    pub now_playing: NowPlayingWidget,
+    pub goal: GoalWidget,
+    pub chat: ChatWidget,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

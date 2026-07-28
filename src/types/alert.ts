@@ -1,6 +1,13 @@
 import { z } from "zod";
 
-export const AlertKindSchema = z.enum(["follow", "subscribe", "subscribeGift", "raid", "cheer"]);
+export const AlertKindSchema = z.enum([
+  "follow",
+  "subscribe",
+  "subscribeGift",
+  "raid",
+  "cheer",
+  "channelPoints",
+]);
 export type AlertKind = z.infer<typeof AlertKindSchema>;
 
 export const AlertPayloadSchema = z.object({
@@ -12,6 +19,9 @@ export const AlertPayloadSchema = z.object({
   viewers: z.number().optional(),
   message: z.string().optional(),
   giftCount: z.number().optional(),
+  /** The channel point reward's name, and what it cost. */
+  reward: z.string().optional(),
+  points: z.number().optional(),
   createdAt: z.number(),
 });
 export type AlertPayload = z.infer<typeof AlertPayloadSchema>;

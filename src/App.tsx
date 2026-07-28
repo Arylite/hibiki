@@ -8,6 +8,7 @@ import { HistoryPage } from "@/components/history/HistoryPage";
 import { AppShell } from "@/components/layout/AppShell";
 import { MusicPage } from "@/components/music/MusicPage";
 import { OverlayPage as OverlaySetupPage } from "@/components/overlay/OverlayPage";
+import { PresetsPage } from "@/components/presets/PresetsPage";
 import { SettingsPage } from "@/components/settings/SettingsPage";
 import { OverlayPage } from "@/overlay/OverlayPage";
 
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="/music" element={<MusicPage />} />
           <Route path="/goal" element={<GoalPage />} />
           <Route path="/chat" element={<ChatPage />} />
+          <Route path="/presets" element={<PresetsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<DashboardPage />} />
         </Route>

@@ -6,7 +6,7 @@ use base64::Engine;
 use tauri::{AppHandle, Emitter, Manager, State};
 
 use crate::alerts::AlertStyles;
-use crate::models::{Alert, AlertKind, AlertStyle, ChatMessage, PublicUser, Settings};
+use crate::models::{Alert, AlertKind, AlertStyle, ChatMessage, GoalWidget, Preset, PublicUser, Settings};
 use crate::nowplaying::{self, NowPlaying};
 use crate::state::AppState;
 use crate::{alerts, db, server, twitch};
@@ -131,6 +131,78 @@ pub fn hide_to_tray(app: AppHandle) {
     }
 }
 
+/// Saved looks, newest first. Only the names and dates: the sheets themselves
+/// are only ever needed by [`apply_preset`], which reads them here.
+#[tauri::command]
+pub fn get_presets(state: State<'_, Arc<AppState>>) -> Vec<serde_json::Value> {
+    db::load_presets(&state.db.lock().unwrap())
+        .iter()
+        .map(|preset| serde_json::json!({ "name": preset.name, "savedAt": preset.saved_at }))
+        .collect()
+}
+
+/// Snapshots the current look under a name, replacing one of the same name.
+#[tauri::command]
+pub fn save_preset(state: State<'_, Arc<AppState>>, name: String) -> Result<(), String> {
+    let name = name.trim().to_string();
+    if name.is_empty() {
+        return Err("a preset needs a name".to_string());
+    }
+
+    let conn = state.db.lock().unwrap();
+    let settings = db::load_settings(&conn);
+    let preset = Preset {
+        name: name.clone(),
+        saved_at: alerts::now_millis(),
+        styles: db::load_alert_styles(&conn),
+        now_playing: settings.now_playing,
+        goal: settings.goal,
+        chat: settings.chat,
+    };
+
+    let mut presets = db::load_presets(&conn);
+    presets.retain(|existing| existing.name != name);
+    presets.insert(0, preset);
+    db::save_presets(&conn, &presets);
+    Ok(())
+}
+
+/// Puts a saved look back on stream. The goal's clock is left alone: it counts
+/// this stream's events, not the preset's.
+#[tauri::command]
+pub fn apply_preset(state: State<'_, Arc<AppState>>, app: AppHandle, name: String) -> Result<Settings, String> {
+    let settings = {
+        let conn = state.db.lock().unwrap();
+        let preset = db::load_presets(&conn)
+            .into_iter()
+            .find(|preset| preset.name == name)
+            .ok_or_else(|| format!("no preset named {name}"))?;
+
+        let mut settings = db::load_settings(&conn);
+        settings.now_playing = preset.now_playing;
+        settings.goal = GoalWidget {
+            started_at: settings.goal.started_at,
+            ..preset.goal
+        };
+        settings.chat = preset.chat;
+        db::save_settings(&conn, &settings);
+        db::save_alert_styles(&conn, &preset.styles);
+        settings
+    };
+
+    let _ = app.emit("styles-changed", ());
+    push_overlay_config(&state);
+    Ok(settings)
+}
+
+#[tauri::command]
+pub fn delete_preset(state: State<'_, Arc<AppState>>, name: String) {
+    let conn = state.db.lock().unwrap();
+    let mut presets = db::load_presets(&conn);
+    presets.retain(|preset| preset.name != name);
+    db::save_presets(&conn, &presets);
+}
+
 /// Open overlays re-render on the next frame instead of needing a refresh.
 fn push_overlay_config(state: &AppState) {
     let conn = state.db.lock().unwrap();
@@ -145,14 +217,51 @@ fn push_goal(state: &AppState) {
     state.broadcast("goal", server::goal_state(&db::load_settings(&conn), &conn));
 }
 
+impl From<crate::models::TwitchCredentials> for PublicUser {
+    fn from(creds: crate::models::TwitchCredentials) -> Self {
+        Self {
+            user_id: creds.user_id,
+            login: creds.login,
+            display_name: creds.display_name,
+            profile_image_url: creds.profile_image_url,
+        }
+    }
+}
+
 #[tauri::command]
 pub fn get_auth_status(state: State<'_, Arc<AppState>>) -> Option<PublicUser> {
-    db::load_credentials(&state.db.lock().unwrap()).map(|creds| PublicUser {
-        user_id: creds.user_id,
-        login: creds.login,
-        display_name: creds.display_name,
-        profile_image_url: creds.profile_image_url,
-    })
+    db::load_credentials(&state.db.lock().unwrap()).map(PublicUser::from)
+}
+
+/// Every signed-in account, the active one first.
+#[tauri::command]
+pub fn get_accounts(state: State<'_, Arc<AppState>>) -> Vec<PublicUser> {
+    db::load_accounts(&state.db.lock().unwrap())
+        .into_iter()
+        .map(PublicUser::from)
+        .collect()
+}
+
+/// Streams as a different signed-in account: the EventSub socket is torn down
+/// and reopened on the new token, so alerts and chat follow the switch.
+#[tauri::command]
+pub fn switch_account(
+    state: State<'_, Arc<AppState>>,
+    app: AppHandle,
+    user_id: String,
+) -> Result<PublicUser, String> {
+    let user = {
+        let conn = state.db.lock().unwrap();
+        if !db::activate_account(&conn, &user_id) {
+            return Err("that account is not signed in".to_string());
+        }
+        db::load_credentials(&conn).map(PublicUser::from).ok_or("no account")?
+    };
+
+    twitch::eventsub::stop(&state);
+    twitch::eventsub::spawn(state.inner().clone(), app.clone());
+    let _ = app.emit("auth-changed", Some(&user));
+    Ok(user)
 }
 
 const DEFAULT_HISTORY_LIMIT: i64 = 100;
@@ -208,9 +317,19 @@ pub fn send_test_alert(state: State<'_, Arc<AppState>>, app: AppHandle, kind: Al
     alerts::dispatch(&state, &app, alerts::sample_alert(kind));
 }
 
+/// Signs out of the active account. Another signed-in account takes over
+/// rather than leaving the app connected to nothing.
 #[tauri::command]
-pub fn logout(state: State<'_, Arc<AppState>>, app: AppHandle) {
+pub fn logout(state: State<'_, Arc<AppState>>, app: AppHandle) -> Option<PublicUser> {
     twitch::eventsub::stop(&state);
-    db::clear_credentials(&state.db.lock().unwrap());
-    let _ = app.emit("auth-changed", Option::<PublicUser>::None);
+    let next = {
+        let conn = state.db.lock().unwrap();
+        db::clear_credentials(&conn);
+        db::load_credentials(&conn).map(PublicUser::from)
+    };
+    if next.is_some() {
+        twitch::eventsub::spawn(state.inner().clone(), app.clone());
+    }
+    let _ = app.emit("auth-changed", next.clone());
+    next
 }
