@@ -6,6 +6,7 @@ import { Copy, Minus, Square, X } from "lucide-react";
 import { StatusDot, type StatusTone } from "@/components/ui/status-dot";
 import { cn } from "@/lib/utils";
 import { useServerStatusStore } from "@/stores/serverStatusStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 // Called lazily, never at module scope: getCurrentWindow() reads Tauri
 // internals that only exist inside the app webview, and this module ships in
@@ -30,6 +31,8 @@ export function TitleBar() {
   const [isMaximized, setIsMaximized] = useState(false);
   const status = useServerStatusStore((s) => s.status);
   const eventsubConnected = useServerStatusStore((s) => s.eventsubConnected);
+  // Until settings load, the long-standing behaviour: minimising hides.
+  const toTray = useSettingsStore((s) => s.settings?.minimizeToTray ?? true);
 
   useEffect(() => {
     const win = appWindow();
@@ -61,7 +64,10 @@ export function TitleBar() {
       </div>
 
       <div className="flex items-center">
-        <WindowButton onClick={() => invoke("hide_to_tray")} label="Minimize to tray">
+        <WindowButton
+          onClick={() => (toTray ? invoke("hide_to_tray") : appWindow()?.minimize())}
+          label={toTray ? "Minimize to tray" : "Minimize"}
+        >
           <Minus className="size-3.5" />
         </WindowButton>
         <WindowButton onClick={() => appWindow()?.toggleMaximize()} label={isMaximized ? "Restore" : "Maximize"}>

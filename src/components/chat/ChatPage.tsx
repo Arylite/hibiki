@@ -98,6 +98,7 @@ export function ChatPage() {
               <ChatBox
                 messages={messages.length > 0 ? messages : SAMPLE}
                 config={{ ...chat, enabled: true, fadeAfterSecs: 0 }}
+                pad={settings.overlayPadding}
               />
             </StreamPreview>
             <p className="mt-1 px-0.5 text-sm text-ink-3">
@@ -195,7 +196,6 @@ export function ChatPage() {
               config={chat}
               patch={patch}
               width={{ value: chat.width, onChange: (width) => patch({ width }) }}
-              boxed={chat.background !== "transparent" || chat.borderWidth > 0}
             />
           </Block>
 

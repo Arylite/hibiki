@@ -64,10 +64,14 @@ pub struct Settings {
     pub alert_position: AlertPosition,
     /// Breathing room between two alerts, so a raid does not machine-gun them.
     pub alert_gap_ms: u32,
+    /// How far every widget sits from the edge of the stream, in pixels.
+    pub overlay_padding: u32,
     /// Keeps the window out of OBS display capture, screen shares and the
     /// Game Bar. On by default: the window shows an access token's worth of
     /// account state.
     pub hide_from_capture: bool,
+    /// Minimising sends the window to the tray. Off leaves it in the taskbar.
+    pub minimize_to_tray: bool,
     pub now_playing: NowPlayingWidget,
     pub goal: GoalWidget,
     pub chat: ChatWidget,
@@ -82,7 +86,9 @@ impl Default for Settings {
             client_id: String::new(),
             alert_position: AlertPosition::Center,
             alert_gap_ms: 600,
+            overlay_padding: 40,
             hide_from_capture: true,
+            minimize_to_tray: true,
             now_playing: NowPlayingWidget::default(),
             goal: GoalWidget::default(),
             chat: ChatWidget::default(),
@@ -115,6 +121,8 @@ pub struct ChatWidget {
     pub accent: String,
     pub text_color: String,
     pub background: String,
+    /// 100 is opaque; below that the stream shows through the backdrop.
+    pub background_opacity: u32,
     pub font_size: u32,
 
     // Frame
@@ -153,6 +161,7 @@ impl Default for ChatWidget {
             accent: "#22c55e".to_string(),
             text_color: "#ffffff".to_string(),
             background: "transparent".to_string(),
+            background_opacity: 100,
             font_size: 20,
 
             corner_radius: 12,
@@ -224,6 +233,8 @@ pub struct GoalWidget {
     pub accent: String,
     pub text_color: String,
     pub background: String,
+    /// 100 is opaque; below that the stream shows through the backdrop.
+    pub background_opacity: u32,
     pub font_size: u32,
     /// Counting starts here, so "reset" is a timestamp rather than a delete.
     pub started_at: i64,
@@ -261,6 +272,7 @@ impl Default for GoalWidget {
             accent: "#22c55e".to_string(),
             text_color: "#ffffff".to_string(),
             background: "transparent".to_string(),
+            background_opacity: 100,
             font_size: 18,
             started_at: 0,
 
@@ -293,6 +305,8 @@ pub struct NowPlayingWidget {
     pub accent: String,
     pub text_color: String,
     pub background: String,
+    /// 100 is opaque; below that the stream shows through the backdrop.
+    pub background_opacity: u32,
     pub font_size: u32,
     pub show_artist: bool,
     pub show_source: bool,
@@ -334,6 +348,7 @@ impl Default for NowPlayingWidget {
             accent: "#22c55e".to_string(),
             text_color: "#ffffff".to_string(),
             background: "transparent".to_string(),
+            background_opacity: 100,
             font_size: 18,
             show_artist: true,
             show_source: false,
@@ -403,6 +418,8 @@ pub struct AlertStyle {
     pub accent: String,
     pub text_color: String,
     pub background: String,
+    /// 100 is opaque; below that the stream shows through the backdrop.
+    pub background_opacity: u32,
     pub image_size: u32,
     pub font_size: u32,
     /// Ignore repeats of this alert for N ms. 0 disables it.
@@ -444,6 +461,7 @@ impl Default for AlertStyle {
             accent: "#22c55e".to_string(),
             text_color: "#ffffff".to_string(),
             background: "transparent".to_string(),
+            background_opacity: 100,
             image_size: 200,
             font_size: 32,
             cooldown_ms: 0,

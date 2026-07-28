@@ -1,27 +1,22 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-import { frameStyle, isTransparent, textShadow } from "@/lib/overlay-style";
+import { frameStyle, isTransparent, positionStyle, textShadow } from "@/lib/overlay-style";
 import { cn } from "@/lib/utils";
 import { sourceLabel, type NowPlaying } from "@/types/nowplaying";
-import type { AlertPosition, NowPlayingWidget as WidgetConfig } from "@/types/settings";
-
-/** Corner placement, independent of where alerts land. */
-const POSITION_CLASSES: Record<AlertPosition, string> = {
-  "top-left": "top-10 left-10",
-  "top-center": "top-10 left-1/2 -translate-x-1/2",
-  "top-right": "top-10 right-10",
-  "center-left": "top-1/2 left-10 -translate-y-1/2",
-  center: "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
-  "center-right": "top-1/2 right-10 -translate-y-1/2",
-  "bottom-left": "bottom-10 left-10",
-  "bottom-center": "bottom-10 left-1/2 -translate-x-1/2",
-  "bottom-right": "bottom-10 right-10",
-};
+import type { NowPlayingWidget as WidgetConfig } from "@/types/settings";
 
 /** The music strip on stream. Bars animate only while audio is actually
  *  playing — a frozen equaliser next to a paused track would be a lie. */
-export function NowPlayingWidget({ track, config }: { track: NowPlaying | null; config: WidgetConfig }) {
+export function NowPlayingWidget({
+  track,
+  config,
+  pad,
+}: {
+  track: NowPlaying | null;
+  config: WidgetConfig;
+  pad: number;
+}) {
   const visible = Boolean(track) && config.enabled && (track!.playing || !config.hideWhenPaused);
   const transparent = isTransparent(config.background);
   const shadow = textShadow(config.textShadow, transparent);
@@ -47,12 +42,9 @@ export function NowPlayingWidget({ track, config }: { track: NowPlaying | null; 
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 12 }}
           transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-          className={cn(
-            "absolute flex items-center gap-3",
-            POSITION_CLASSES[config.position],
-            !config.width && "max-w-[36vw]",
-          )}
+          className={cn("absolute flex items-center gap-3", !config.width && "max-w-[36vw]")}
           style={{
+            ...positionStyle(config.position, pad),
             ...frameStyle(config),
             fontSize: config.fontSize,
             width: config.width || undefined,

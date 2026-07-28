@@ -129,7 +129,8 @@ export function OverlayPage() {
 
   return (
     <div
-      className={`relative flex h-screen w-screen overflow-hidden bg-transparent p-10 ${POSITION_CLASSES[config.alertPosition]}`}
+      className={`relative flex h-screen w-screen overflow-hidden bg-transparent ${POSITION_CLASSES[config.alertPosition]}`}
+      style={{ padding: config.overlayPadding }}
     >
       {showAlerts && (
         <AnimatePresence mode="wait">
@@ -137,9 +138,9 @@ export function OverlayPage() {
         </AnimatePresence>
       )}
 
-      {showMusic && <NowPlayingWidget track={track} config={config.nowPlaying} />}
-      {showGoal && <GoalBar config={config.goal} state={goal} />}
-      {showChat && <ChatBox messages={chat} config={config.chat} />}
+      {showMusic && <NowPlayingWidget track={track} config={config.nowPlaying} pad={config.overlayPadding} />}
+      {showGoal && <GoalBar config={config.goal} state={goal} pad={config.overlayPadding} />}
+      {showChat && <ChatBox messages={chat} config={config.chat} pad={config.overlayPadding} />}
     </div>
   );
 }

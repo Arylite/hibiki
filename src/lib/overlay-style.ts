@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 
-import type { TextShadow } from "@/types/settings";
+import type { AlertPosition, TextShadow } from "@/types/settings";
 
 /**
  * Shared look for the three on-stream widgets. Every value here is the
@@ -50,8 +50,37 @@ export function textShadow(mode: TextShadow, transparent: boolean): string | und
   }
 }
 
+/**
+ * A picked colour, dimmed by an alpha byte: `#22c55e` at 60% becomes
+ * `#22c55e99`. Anything the colour input did not produce — `transparent`, an
+ * rgba() string — is handed back untouched.
+ */
+export function withOpacity(color: string, opacity: number): string {
+  if (opacity >= 100 || !/^#[0-9a-f]{6}$/i.test(color)) return color;
+  const alpha = Math.round((Math.max(0, opacity) / 100) * 255);
+  return color + alpha.toString(16).padStart(2, "0");
+}
+
+/**
+ * Where a widget sits on the stream. The inset is inline rather than a class
+ * because it follows the streamer's overlay padding; centring uses the
+ * standalone `translate` property so it survives the entrance animations,
+ * which own `transform`.
+ */
+export function positionStyle(position: AlertPosition, pad: number): CSSProperties {
+  const [vertical, horizontal] = position === "center" ? ["center", "center"] : position.split("-");
+  return {
+    top: vertical === "top" ? pad : vertical === "center" ? "50%" : undefined,
+    bottom: vertical === "bottom" ? pad : undefined,
+    left: horizontal === "left" ? pad : horizontal === "center" ? "50%" : undefined,
+    right: horizontal === "right" ? pad : undefined,
+    translate: `${horizontal === "center" ? "-50%" : "0"} ${vertical === "center" ? "-50%" : "0"}`,
+  };
+}
+
 interface FrameConfig {
   background: string;
+  backgroundOpacity: number;
   textColor: string;
   cornerRadius: number;
   borderColor: string;
@@ -72,7 +101,7 @@ export function frameStyle(config: FrameConfig): CSSProperties {
   const boxed = !transparent || bordered;
 
   return {
-    background: transparent ? undefined : config.background,
+    background: transparent ? undefined : withOpacity(config.background, config.backgroundOpacity),
     color: config.textColor,
     border: bordered ? `${config.borderWidth}px solid ${config.borderColor}` : undefined,
     borderRadius: boxed ? config.cornerRadius : undefined,

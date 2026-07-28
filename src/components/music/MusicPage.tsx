@@ -102,7 +102,11 @@ export function MusicPage() {
           <Group title="On stream">
             <StreamPreview notice={widget.enabled ? undefined : "Not shown on stream"}>
               {/* The real overlay component, so the preview cannot drift. */}
-              <StreamWidget track={track ?? SAMPLE} config={{ ...widget, enabled: true, hideWhenPaused: false }} />
+              <StreamWidget
+                track={track ?? SAMPLE}
+                config={{ ...widget, enabled: true, hideWhenPaused: false }}
+                pad={settings.overlayPadding}
+              />
             </StreamPreview>
             <p className="mt-1 px-0.5 text-sm text-ink-3">
               {track ? "Your current track, at stream scale." : "Sample track — nothing is playing right now."}
@@ -223,7 +227,6 @@ export function MusicPage() {
               config={widget}
               patch={patch}
               width={{ value: widget.width, onChange: (width) => patch({ width }) }}
-              boxed={widget.background !== "transparent" || widget.borderWidth > 0}
             />
           </Block>
 

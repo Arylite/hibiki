@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Play, RotateCcw, Volume2 } from "lucide-react";
 
+import { CopyStyleDialog } from "@/components/alerts/CopyStyleDialog";
 import { MediaField } from "@/components/alerts/MediaField";
 import { Block, Masonry } from "@/components/layout/Page";
 import { FrameGroup, TypeGroup } from "@/components/widgets/frame-controls";
@@ -69,13 +70,16 @@ export function AlertDetail({ kind, style }: { kind: AlertKind; style: AlertStyl
           <h1 className="text-display text-ink">{label}</h1>
           <p className="mt-2 text-lead text-ink-2">{description}</p>
         </div>
-        {/* The one control that decides whether any of the rest matters. */}
-        <label className="flex shrink-0 items-center gap-2.5 pt-1.5">
-          <span className="text-body text-ink-2">
-            {style.enabled ? "Shown on stream" : "Hidden from stream"}
-          </span>
-          <Switch checked={style.enabled} onCheckedChange={(enabled) => update(kind, { enabled })} />
-        </label>
+        <div className="flex shrink-0 items-center gap-3 pt-1.5">
+          <CopyStyleDialog source={kind} style={style} />
+          {/* The one control that decides whether any of the rest matters. */}
+          <label className="flex items-center gap-2.5">
+            <span className="text-body text-ink-2">
+              {style.enabled ? "Shown on stream" : "Hidden from stream"}
+            </span>
+            <Switch checked={style.enabled} onCheckedChange={(enabled) => update(kind, { enabled })} />
+          </label>
+        </div>
       </header>
 
       {/* The feedback loop the page never had: editing an alert used to mean
@@ -238,11 +242,7 @@ export function AlertDetail({ kind, style }: { kind: AlertKind; style: AlertStyl
         </Block>
 
         <Block>
-          <FrameGroup
-            config={style}
-            patch={(values) => update(kind, values)}
-            boxed={style.background !== "transparent" || style.borderWidth > 0}
-          />
+          <FrameGroup config={style} patch={(values) => update(kind, values)} />
         </Block>
 
         <Block>

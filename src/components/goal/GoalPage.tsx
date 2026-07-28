@@ -101,7 +101,11 @@ export function GoalPage() {
           <Group title="On stream">
             <StreamPreview notice={goal.enabled ? undefined : "Not shown on stream"}>
               {/* The real GoalBar, so the preview cannot drift from it. */}
-              <GoalBar config={{ ...goal, enabled: true }} state={{ current, target: goal.target }} />
+              <GoalBar
+                config={{ ...goal, enabled: true }}
+                state={{ current, target: goal.target }}
+                pad={settings.overlayPadding}
+              />
             </StreamPreview>
           </Group>
         </div>
@@ -222,7 +226,6 @@ export function GoalPage() {
               config={goal}
               patch={patch}
               width={{ value: goal.width, onChange: (width) => patch({ width }) }}
-              boxed={goal.background !== "transparent" || goal.borderWidth > 0}
             />
           </Block>
 

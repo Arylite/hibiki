@@ -1,24 +1,12 @@
 import { motion } from "framer-motion";
 
-import { frameStyle, isTransparent, textShadow } from "@/lib/overlay-style";
+import { frameStyle, isTransparent, positionStyle, textShadow } from "@/lib/overlay-style";
 import { cn } from "@/lib/utils";
-import type { AlertPosition, GoalState, GoalWidget } from "@/types/settings";
-
-const POSITION_CLASSES: Record<AlertPosition, string> = {
-  "top-left": "top-10 left-10",
-  "top-center": "top-10 left-1/2 -translate-x-1/2",
-  "top-right": "top-10 right-10",
-  "center-left": "top-1/2 left-10 -translate-y-1/2",
-  center: "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
-  "center-right": "top-1/2 right-10 -translate-y-1/2",
-  "bottom-left": "bottom-10 left-10",
-  "bottom-center": "bottom-10 left-1/2 -translate-x-1/2",
-  "bottom-right": "bottom-10 right-10",
-};
+import type { GoalState, GoalWidget } from "@/types/settings";
 
 /** Progress towards a stream goal. The bar animates to its new width so the
  *  movement itself reads as "someone just did that". */
-export function GoalBar({ config, state }: { config: GoalWidget; state: GoalState }) {
+export function GoalBar({ config, state, pad }: { config: GoalWidget; state: GoalState; pad: number }) {
   if (!config.enabled) return null;
 
   const target = Math.max(1, state.target || config.target);
@@ -31,11 +19,11 @@ export function GoalBar({ config, state }: { config: GoalWidget; state: GoalStat
     <div
       className={cn(
         "absolute",
-        POSITION_CLASSES[config.position],
         // The responsive default, unless the streamer pinned a width.
         !config.width && "w-[22vw] min-w-[220px]",
       )}
       style={{
+        ...positionStyle(config.position, pad),
         ...frameStyle(config),
         fontSize: config.fontSize,
         width: config.width || undefined,

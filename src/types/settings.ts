@@ -26,6 +26,8 @@ export type TextAlign = z.infer<typeof TextAlignSchema>;
 
 /** The frame and type controls every on-stream widget shares. */
 const FrameFields = {
+  /** 100 is opaque; below that the stream shows through the backdrop. */
+  backgroundOpacity: z.number().int(),
   cornerRadius: z.number().int(),
   borderColor: z.string(),
   borderWidth: z.number().int(),
@@ -122,8 +124,12 @@ export const SettingsSchema = z.object({
   clientId: z.string(),
   alertPosition: AlertPositionSchema,
   alertGapMs: z.number().int(),
+  /** How far every widget sits from the edge of the stream, in pixels. */
+  overlayPadding: z.number().int(),
   /** Keeps the window out of OBS display capture and screen shares. */
   hideFromCapture: z.boolean(),
+  /** Minimising sends the window to the tray rather than the taskbar. */
+  minimizeToTray: z.boolean(),
   nowPlaying: NowPlayingWidgetSchema,
   goal: GoalWidgetSchema,
   chat: ChatWidgetSchema,
@@ -175,6 +181,7 @@ export const OverlayConfigSchema = z.object({
   globalVolume: z.number(),
   alertPosition: AlertPositionSchema,
   alertGapMs: z.number(),
+  overlayPadding: z.number(),
   styles: AlertStylesSchema,
   nowPlaying: NowPlayingWidgetSchema,
   goal: GoalWidgetSchema,

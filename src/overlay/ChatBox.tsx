@@ -1,25 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 
-import { frameStyle, isTransparent, textShadow } from "@/lib/overlay-style";
+import { frameStyle, isTransparent, positionStyle, textShadow } from "@/lib/overlay-style";
 import { useNow } from "@/lib/use-now";
-import { cn } from "@/lib/utils";
 import { visibleMessages, type ChatMessage } from "@/types/chat";
-import type { AlertPosition, ChatWidget } from "@/types/settings";
-
-/** Chat grows from the bottom when it sits low on the canvas, and from the
- *  top when it sits high — so new lines always arrive from the same edge the
- *  eye is already resting on. */
-const POSITION_CLASSES: Record<AlertPosition, string> = {
-  "top-left": "top-10 left-10",
-  "top-center": "top-10 left-1/2 -translate-x-1/2",
-  "top-right": "top-10 right-10",
-  "center-left": "top-1/2 left-10 -translate-y-1/2",
-  center: "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
-  "center-right": "top-1/2 right-10 -translate-y-1/2",
-  "bottom-left": "bottom-10 left-10",
-  "bottom-center": "bottom-10 left-1/2 -translate-x-1/2",
-  "bottom-right": "bottom-10 right-10",
-};
+import type { ChatWidget } from "@/types/settings";
 
 const BADGE_LABELS: Record<string, string> = {
   broadcaster: "HOST",
@@ -34,7 +18,15 @@ const BADGE_ORDER = ["broadcaster", "moderator", "vip", "subscriber", "founder"]
 
 /** Twitch chat on stream. The lines OBS shows are a filtered view of the same
  *  feed the app window holds — the app is the monitor, this is the broadcast. */
-export function ChatBox({ messages, config }: { messages: ChatMessage[]; config: ChatWidget }) {
+export function ChatBox({
+  messages,
+  config,
+  pad,
+}: {
+  messages: ChatMessage[];
+  config: ChatWidget;
+  pad: number;
+}) {
   // Only ticks when something is actually waiting to expire.
   const now = useNow(config.fadeAfterSecs > 0 ? 1000 : 3_600_000);
 
@@ -48,8 +40,9 @@ export function ChatBox({ messages, config }: { messages: ChatMessage[]; config:
 
   return (
     <div
-      className={cn("absolute flex flex-col justify-end", POSITION_CLASSES[config.position])}
+      className="absolute flex flex-col justify-end"
       style={{
+        ...positionStyle(config.position, pad),
         ...frameStyle(config),
         fontSize: config.fontSize,
         width: config.width || undefined,

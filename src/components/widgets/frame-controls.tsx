@@ -15,6 +15,9 @@ import type { TextShadow } from "@/types/settings";
 const DEFAULT_BORDER = "#FFFFFF";
 
 export interface FrameFields {
+  /** Read, never written here — it decides whether the widget is a box. */
+  background: string;
+  backgroundOpacity: number;
   cornerRadius: number;
   borderColor: string;
   borderWidth: number;
@@ -43,16 +46,30 @@ interface FrameGroupProps {
   patch: (values: Partial<FrameFields>) => void;
   /** Widgets that can be pinned to a width pass their own control in. */
   width?: { value: number; onChange: (value: number) => void };
-  /** Padding and radius only show once the widget is a box. */
-  boxed: boolean;
 }
 
-export function FrameGroup({ config, patch, width, boxed }: FrameGroupProps) {
+export function FrameGroup({ config, patch, width }: FrameGroupProps) {
   const bordered = config.borderWidth > 0 && config.borderColor !== "transparent";
+  const hasBackdrop = config.background !== "transparent";
+  /** Padding and radius only mean anything once the widget is a box. */
+  const boxed = hasBackdrop || bordered;
 
   return (
     <Group title="Frame" description="The box around it, once it has a backdrop or a border.">
       <Rows>
+        {hasBackdrop && (
+          <Row label="Backdrop opacity" description="Lower lets the stream through it." wide>
+            <SliderRow
+              value={config.backgroundOpacity}
+              onChange={(backgroundOpacity) => patch({ backgroundOpacity })}
+              min={0}
+              max={100}
+              step={5}
+              format={(v) => `${v}%`}
+            />
+          </Row>
+        )}
+
         <Row label="Border" description="Sits on the edge of the backdrop.">
           {bordered ? (
             <>

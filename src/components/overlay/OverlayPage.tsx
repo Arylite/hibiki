@@ -8,6 +8,7 @@ import { CopyButton } from "@/components/ui/copy-button";
 import { Group, Row, RowButton, Rows } from "@/components/ui/group";
 import { PositionGrid } from "@/components/ui/position-grid";
 import { LoadingPane } from "@/components/ui/skeleton";
+import { SliderRow } from "@/components/ui/slider";
 import { toast } from "@/components/ui/toast";
 import { ALERT_KINDS, ALERT_META } from "@/lib/alert-meta";
 import { alertsService } from "@/services/alerts/alertsService";
@@ -114,6 +115,21 @@ export function OverlayPage() {
             <p className="mt-2.5 px-0.5 text-sm text-ink-3">
               Everything else about alerts — image, sound, colours — lives in Alerts.
             </p>
+          </Group>
+
+          <Group title="Edge padding" description="How far every widget sits from the edge of the stream.">
+            <Rows>
+              <Row wide>
+                <SliderRow
+                  value={settings.overlayPadding}
+                  onChange={(overlayPadding) => update({ overlayPadding })}
+                  min={0}
+                  max={200}
+                  step={4}
+                  format={(v) => `${v}px`}
+                />
+              </Row>
+            </Rows>
           </Group>
 
           <Group title="Send a test">

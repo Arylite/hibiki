@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { ExternalLink } from "lucide-react";
+import { getVersion } from "@tauri-apps/api/app";
+import { openUrl } from "@tauri-apps/plugin-opener";
+import { Download, ExternalLink, Upload } from "lucide-react";
 
 import { Page, PageHeader, Stack } from "@/components/layout/Page";
 import { Button } from "@/components/ui/button";
@@ -10,9 +12,13 @@ import { LoadingPane } from "@/components/ui/skeleton";
 import { SliderRow } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/toast";
+import { downloadStyleFile, readStyleFile } from "@/lib/style-file";
+import { checkForUpdate, type UpdateInfo } from "@/lib/update";
+import { useAlertStyleStore } from "@/stores/alertStyleStore";
 import { useAuthStore } from "@/stores/authStore";
 import { useServerStatusStore } from "@/stores/serverStatusStore";
 import { useSettingsStore } from "@/stores/settingsStore";
+import type { AlertKind } from "@/types/alert";
 
 export function SettingsPage() {
   const settings = useSettingsStore((s) => s.settings);
@@ -27,6 +33,8 @@ export function SettingsPage() {
       <Stack>
         <TwitchSection />
         <PlaybackSection />
+        <StylesSection />
+        <UpdatesSection />
         <AdvancedSection />
       </Stack>
     </Page>
@@ -162,6 +170,130 @@ function PlaybackSection() {
   );
 }
 
+/** A look is work, and work that only exists in one sqlite file is work you
+ *  can lose. This is the backup, and the way to hand a look to someone else. */
+function StylesSection() {
+  const settings = useSettingsStore((s) => s.settings);
+  const update = useSettingsStore((s) => s.update);
+  const styles = useAlertStyleStore((s) => s.styles);
+  const updateStyle = useAlertStyleStore((s) => s.update);
+  const input = useRef<HTMLInputElement>(null);
+
+  const importFile = async (file: File | undefined) => {
+    if (!file) return;
+    try {
+      const incoming = await readStyleFile(file);
+      for (const [kind, style] of Object.entries(incoming.styles ?? {})) {
+        updateStyle(kind as AlertKind, style);
+      }
+      if (settings) {
+        update({
+          ...(incoming.nowPlaying && { nowPlaying: { ...settings.nowPlaying, ...incoming.nowPlaying } }),
+          // The goal's clock belongs to this install, not to the file.
+          ...(incoming.goal && {
+            goal: { ...settings.goal, ...incoming.goal, startedAt: settings.goal.startedAt },
+          }),
+          ...(incoming.chat && { chat: { ...settings.chat, ...incoming.chat } }),
+        });
+      }
+      toast.ok("Styles imported");
+    } catch (err) {
+      toast.error("That file is not a Hibiki style file", String(err));
+    } finally {
+      if (input.current) input.current.value = "";
+    }
+  };
+
+  return (
+    <Group title="Styles" description="The five alerts and the three on-stream widgets, as one file.">
+      <Rows>
+        <Row label="Export" description="Writes them to your downloads folder.">
+          <Button
+            disabled={!settings || !styles}
+            onClick={() => {
+              if (!settings || !styles) return;
+              downloadStyleFile({
+                hibikiStyles: 1,
+                styles,
+                nowPlaying: settings.nowPlaying,
+                goal: settings.goal,
+                chat: settings.chat,
+              });
+            }}
+          >
+            <Download />
+            Export
+          </Button>
+        </Row>
+        <Row label="Import" description="Replaces the looks in the file. Everything else is left alone.">
+          <input
+            ref={input}
+            type="file"
+            accept="application/json,.json"
+            className="hidden"
+            onChange={(e) => importFile(e.target.files?.[0])}
+          />
+          <Button onClick={() => input.current?.click()}>
+            <Upload />
+            Import
+          </Button>
+        </Row>
+      </Rows>
+    </Group>
+  );
+}
+
+/** Hibiki ships from GitHub releases, so that is where it looks. The check
+ *  also runs once at startup; this is the row that says what it found. */
+function UpdatesSection() {
+  const [version, setVersion] = useState("");
+  const [update, setUpdate] = useState<UpdateInfo | null>(null);
+  const [checking, setChecking] = useState(false);
+
+  useEffect(() => {
+    getVersion().then(setVersion);
+  }, []);
+
+  const check = async () => {
+    setChecking(true);
+    try {
+      const found = await checkForUpdate();
+      setUpdate(found);
+      if (!found) toast.ok("Hibiki is up to date");
+    } catch (err) {
+      toast.error("Could not reach GitHub", String(err));
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  return (
+    <Group title="Updates">
+      <Rows>
+        <Row
+          label={update ? `Version ${version} — ${update.latest} is out` : `Version ${version}`}
+          description={
+            update
+              ? "The installer is on the release page. Run it over this one; your settings stay."
+              : "Checked against the releases page when Hibiki starts."
+          }
+        >
+          {update ? (
+            <Button variant="primary" onClick={() => openUrl(update.url)}>
+              <Download />
+              Get {update.latest}
+            </Button>
+          ) : (
+            <Button onClick={check} disabled={checking}>
+              {checking ? "Checking…" : "Check for updates"}
+            </Button>
+          )}
+        </Row>
+      </Rows>
+    </Group>
+  );
+}
+
 function AdvancedSection() {
   const settings = useSettingsStore((s) => s.settings);
   const update = useSettingsStore((s) => s.update);
@@ -191,6 +323,16 @@ function AdvancedSection() {
   return (
     <Group title="Advanced">
       <Rows>
+        <Row
+          label="Minimize to tray"
+          description="Minimising hides the window instead of sending it to the taskbar. Alerts keep firing either way."
+        >
+          <Switch
+            checked={settings.minimizeToTray}
+            onCheckedChange={(minimizeToTray) => update({ minimizeToTray })}
+          />
+        </Row>
+
         <Row
           label="Hide from screen capture"
           description="Keeps this window out of OBS display capture, screen shares and the Game Bar. Turn it off to show Hibiki on stream — your Twitch account details are on screen here."

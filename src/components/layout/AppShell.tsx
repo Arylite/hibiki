@@ -5,7 +5,8 @@ import { Outlet } from "react-router-dom";
 import { BootSplash } from "@/components/layout/BootSplash";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { TitleBar } from "@/components/layout/TitleBar";
-import { Toaster } from "@/components/ui/toast";
+import { toast, Toaster } from "@/components/ui/toast";
+import { checkForUpdate } from "@/lib/update";
 import { useAlertHistoryStore } from "@/stores/alertHistoryStore";
 import { useAlertStyleStore } from "@/stores/alertStyleStore";
 import { useChatStore } from "@/stores/chatStore";
@@ -40,6 +41,14 @@ export function AppShell() {
     loadHistory();
     refreshStatus();
     loadNowPlaying();
+
+    // Once, quietly: a newer release is worth a line, and being offline is
+    // not worth an error while someone is going live.
+    checkForUpdate()
+      .then((update) => {
+        if (update) toast.ok(`Hibiki ${update.latest} is out`, "Settings → Updates has the download.");
+      })
+      .catch(() => {});
 
     const unlisten: Array<() => void> = [];
     listen<TwitchUser | null>("auth-changed", (e) => setUser(e.payload)).then((fn) => unlisten.push(fn));
