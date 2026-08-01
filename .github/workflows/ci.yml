@@ -28,15 +28,15 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           # No git credentials are needed after the clone, so do not leave a
           # token sitting in .git/config for the rest of the job.
           persist-credentials: false
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: pnpm
@@ -49,7 +49,7 @@ jobs:
 
       # The Rust job needs these assets but not the toolchain that makes them:
       # building them again on a Windows runner costs twice as much per minute.
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: dist
           path: dist
@@ -71,13 +71,13 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
       # tauri-build resolves `frontendDist` at compile time, so the Rust side
       # does not compile until the front end exists. It was built once already.
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: dist
           path: dist
